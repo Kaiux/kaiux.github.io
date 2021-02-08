@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Kaiux&#39;s Blog</title>
+    <link>https://kaiux.github.io/</link>
+    <description>Recent content on Kaiux&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 19 Jun 2019 09:09:07 +0000</lastBuildDate><atom:link href="https://kaiux.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>https://kaiux.github.io/about/</link>
+      <pubDate>Sun, 20 Aug 2017 21:38:52 +0800</pubDate>
+      
+      <guid>https://kaiux.github.io/about/</guid>
+      <description>热爱生活，分享技术。</description>
+    </item>
+    
+    <item>
+      <title>如何使用Scala的ClassTag</title>
+      <link>https://kaiux.github.io/post/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8scala%E7%9A%84classtag/</link>
+      <pubDate>Wed, 19 Jun 2019 09:09:07 +0000</pubDate>
+      
+      <guid>https://kaiux.github.io/post/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8scala%E7%9A%84classtag/</guid>
+      <description>Scala官方文档中对于ClassTag的定义如下： ClassTag[T]保存着在运行时被JVM擦除的类型T的信息。当我们在运行时想获得被实</description>
+    </item>
+    
+  </channel>
+</rss>

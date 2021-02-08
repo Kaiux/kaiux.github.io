@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://kaiux.github.io/sitemap.xml

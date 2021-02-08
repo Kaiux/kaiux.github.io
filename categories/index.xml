@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Categories on Kaiux&#39;s Blog</title>
+    <link>https://kaiux.github.io/categories/</link>
+    <description>Recent content in Categories on Kaiux&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 19 Jun 2019 09:09:07 +0000</lastBuildDate><atom:link href="https://kaiux.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Scala</title>
+      <link>https://kaiux.github.io/categories/scala/</link>
+      <pubDate>Wed, 19 Jun 2019 09:09:07 +0000</pubDate>
+      
+      <guid>https://kaiux.github.io/categories/scala/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
