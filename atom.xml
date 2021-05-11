@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Kaiux&#39;s Blog</title>
+  
+  
+  <link href="https://www.kaiux.cn/atom.xml" rel="self"/>
+  
+  <link href="https://www.kaiux.cn/"/>
+  <updated>2021-05-11T01:44:03.124Z</updated>
+  <id>https://www.kaiux.cn/</id>
+  
+  <author>
+    <name>Kaiux</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>如何使用Scala的ClassTag</title>
+    <link href="https://www.kaiux.cn/2019/06/19/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Scala%E7%9A%84ClassTag/"/>
+    <id>https://www.kaiux.cn/2019/06/19/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Scala%E7%9A%84ClassTag/</id>
+    <published>2019-06-19T01:09:07.000Z</published>
+    <updated>2021-05-11T01:44:03.124Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;Scala官方文档中对于&lt;code&gt;ClassTag&lt;/code&gt;的定义如下：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;ClassTag[T]&lt;/code&gt;保存着在运行时被JVM擦除的类型&lt;code&gt;T&lt;/code&gt;的信息。当我们在运行时想获得被实例化的&lt;code&gt;Array&lt;/code&gt;的类型信息的时候，这个特性会比较有用。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;下面请看一个具体的场景：&lt;/p&gt;
+&lt;h2 id=&quot;场景&quot;&gt;&lt;a href=&quot;#场景&quot; class=&quot;headerlink&quot; title=&quot;场景&quot;&gt;&lt;/a&gt;场景&lt;/h2&gt;&lt;p&gt;假定有一个&lt;code&gt;Map[String, Any]&lt;/code&gt;，给定一个指定的key，我们需要检查Map中是否存在该key对应的value，如果存在，则优雅地返回这个值。看起来很简单，下面让我们来实现它，并且逐渐理解&lt;code&gt;ClassTag&lt;/code&gt;。&lt;/p&gt;
+&lt;h2 id=&quot;解决方案一&quot;&gt;&lt;a href=&quot;#解决方案一&quot; class=&quot;headerlink&quot; title=&quot;解决方案一&quot;&gt;&lt;/a&gt;解决方案一&lt;/h2&gt;&lt;p&gt;我们的第一次尝试如下所示：&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Programing" scheme="https://www.kaiux.cn/categories/Programing/"/>
+    
+    <category term="Scala" scheme="https://www.kaiux.cn/categories/Programing/Scala/"/>
+    
+    
+    <category term="Scala" scheme="https://www.kaiux.cn/tags/Scala/"/>
+    
+    <category term="ClassTag" scheme="https://www.kaiux.cn/tags/ClassTag/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hello World</title>
+    <link href="https://www.kaiux.cn/2018/06/19/hello-world/"/>
+    <id>https://www.kaiux.cn/2018/06/19/hello-world/</id>
+    <published>2018-06-19T01:09:07.000Z</published>
+    <updated>2021-05-11T01:48:23.155Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.io/docs/&quot;&gt;documentation&lt;/a&gt; for more info. If you get any problems when using Hexo, you can find the answer in &lt;a href=&quot;https://hexo.io/docs/troubleshooting.html&quot;&gt;troubleshooting&lt;/a&gt; or you can ask me on &lt;a href=&quot;https://github.com/hexojs/hexo/issues&quot;&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;Quick-Start&quot;&gt;&lt;a href=&quot;#Quick-Start&quot; class=&quot;headerlink&quot; title=&quot;Quick Start&quot;&gt;&lt;/a&gt;Quick Start&lt;/h2&gt;&lt;h3 id=&quot;Create-a-new-post&quot;&gt;&lt;a href=&quot;#Create-a-new-post&quot; class=&quot;headerlink&quot; title=&quot;Create a new post&quot;&gt;&lt;/a&gt;Create a new post&lt;/h3&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ hexo new &lt;span class=&quot;string&quot;&gt;&amp;quot;My New Post&amp;quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt;More info: &lt;a href=&quot;https://hexo.io/docs/writing.html&quot;&gt;Writing&lt;/a&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Programing" scheme="https://www.kaiux.cn/categories/Programing/"/>
+    
+    <category term="Hexo" scheme="https://www.kaiux.cn/categories/Programing/Hexo/"/>
+    
+    
+    <category term="Hexo" scheme="https://www.kaiux.cn/tags/Hexo/"/>
+    
+  </entry>
+  
+</feed>
