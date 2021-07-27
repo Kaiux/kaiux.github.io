@@ -6,7 +6,7 @@
   <link href="https://www.kaiux.cn/atom.xml" rel="self"/>
   
   <link href="https://www.kaiux.cn/"/>
-  <updated>2021-07-08T06:09:40.879Z</updated>
+  <updated>2021-07-27T09:22:38.438Z</updated>
   <id>https://www.kaiux.cn/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>从零构造一台计算机——布尔代数到逻辑电路</title>
+    <link href="https://www.kaiux.cn/2021/07/26/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E5%B8%83%E5%B0%94%E4%BB%A3%E6%95%B0%E5%88%B0%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/"/>
+    <id>https://www.kaiux.cn/2021/07/26/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E5%B8%83%E5%B0%94%E4%BB%A3%E6%95%B0%E5%88%B0%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/</id>
+    <published>2021-07-26T13:00:00.000Z</published>
+    <updated>2021-07-27T09:22:38.438Z</updated>
+    
+    
+    <summary type="html">&lt;center&gt;本文解释了如何使用电路去实现布尔代数中的与、或、非和与非计算逻辑，为后续实现复杂逻辑电路打下基础。&lt;/center&gt;</summary>
+    
+    
+    
+    <category term="Computer Science" scheme="https://www.kaiux.cn/categories/Computer-Science/"/>
+    
+    
+    <category term="Hex" scheme="https://www.kaiux.cn/tags/Hex/"/>
+    
+    <category term="Computer Science" scheme="https://www.kaiux.cn/tags/Computer-Science/"/>
+    
+  </entry>
   
   <entry>
     <title>如何使用Scala的ClassTag</title>
@@ -36,27 +57,6 @@
     <category term="Scala" scheme="https://www.kaiux.cn/tags/Scala/"/>
     
     <category term="ClassTag" scheme="https://www.kaiux.cn/tags/ClassTag/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Hello World</title>
-    <link href="https://www.kaiux.cn/2018/06/02/hello-world/"/>
-    <id>https://www.kaiux.cn/2018/06/02/hello-world/</id>
-    <published>2018-06-02T09:06:02.000Z</published>
-    <updated>2021-07-08T06:09:20.550Z</updated>
-    
-    
-    <summary type="html">&lt;center&gt;Hello Hexo World.&lt;/center&gt;</summary>
-    
-    
-    
-    <category term="Programing" scheme="https://www.kaiux.cn/categories/Programing/"/>
-    
-    <category term="Hexo" scheme="https://www.kaiux.cn/categories/Programing/Hexo/"/>
-    
-    
-    <category term="Hexo" scheme="https://www.kaiux.cn/tags/Hexo/"/>
     
   </entry>
   
