@@ -42,7 +42,7 @@
     <link href="https://www.kaiux.cn/2019/06/19/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Scala%E7%9A%84ClassTag/"/>
     <id>https://www.kaiux.cn/2019/06/19/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Scala%E7%9A%84ClassTag/</id>
     <published>2019-06-19T01:09:07.000Z</published>
-    <updated>2021-07-08T06:09:40.879Z</updated>
+    <updated>2021-07-27T09:42:20.637Z</updated>
     
     
     <summary type="html">&lt;center&gt;本文将从一个例子开始解释Scala的ClassTag，并且逐渐理解其基本原理。&lt;/center&gt;</summary>
