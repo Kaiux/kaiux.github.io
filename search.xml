@@ -188,7 +188,7 @@
     <content><![CDATA[<p>这里介绍一下Nand2Tetris课程里面用到的硬件模拟器的用法，可以在<a href="https://www.nand2tetris.org/software">这里</a>找到下载方式。</p>
 <h2 id="hdl语法">HDL语法</h2>
 <p>假如我们要构建一个<strong>非门</strong>，这时候我们需要创建一个文件，文件名为：<code>Not.hdl</code>，内容如下: <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// This file is part of www.nand2tetris.org</span><br><span class="line">// and the book &quot;The Elements of Computing Systems&quot;</span><br><span class="line">// by Nisan and Schocken, MIT Press.</span><br><span class="line">// File name: projects/01/Not.hdl</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * Not gate:</span><br><span class="line"> * out = not in</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">CHIP Not &#123;</span><br><span class="line">    IN in;</span><br><span class="line">    OUT out;</span><br><span class="line"></span><br><span class="line">    PARTS:</span><br><span class="line">    Nand(a=in, b=in, out=out);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 以<code>//</code>开头，或者在<code>/** **/</code>之间的是注释，这个和主流的编程语言一致。上面<code>/** **/</code>之间的是<code>Not</code>的描述。</p>
-<p><code>CHIP</code>关键字定义了组件的名称，<code>IN</code>定义了组件的输入端，<code>OUT</code>定义了组价的输出，<code>PARTS</code>下面是具体的实现。</p>
+<p><code>CHIP</code>关键字定义了组件的名称，<code>IN</code>定义了组件的输入端，<code>OUT</code>定义了组件的输出，<code>PARTS</code>下面是具体的实现。</p>
 <p>我们来具体看实现：</p>
 <p><code>Nand(a=in, b=in, out=out);</code>的意思是<code>Nand</code>（与非门，默认提供）的输入端<code>a</code>, <code>b</code>作为<code>Not</code>的输入<code>in</code>，<code>Nand</code>的输出<code>out</code>作为<code>Not</code>的输出<code>out</code>。</p>
 <p>当我们构建完<code>Not</code>的时候，我们就可以把他作为组件在后续的代码中使用了。</p>
