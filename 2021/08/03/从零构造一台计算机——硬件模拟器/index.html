@@ -20,30 +20,37 @@
     var CONFIG = {"hostname":"www.kaiux.cn","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="无为而无不为">
-<meta property="og:type" content="website">
-<meta property="og:title" content="小虞的博客">
-<meta property="og:url" content="https://www.kaiux.cn/index.html">
+  <meta name="description" content="本文介绍了如何使用课程中提供的硬件模拟器去构造我们需要的逻辑电路，并且测试组件的逻辑是否正确。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从零构造一台计算机——硬件模拟器">
+<meta property="og:url" content="https://www.kaiux.cn/2021/08/03/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E7%A1%AC%E4%BB%B6%E6%A8%A1%E6%8B%9F%E5%99%A8/index.html">
 <meta property="og:site_name" content="小虞的博客">
-<meta property="og:description" content="无为而无不为">
+<meta property="og:description" content="本文介绍了如何使用课程中提供的硬件模拟器去构造我们需要的逻辑电路，并且测试组件的逻辑是否正确。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.kaiux.cn/img/nand/00/HardwareSimulator.png">
+<meta property="og:image" content="https://www.kaiux.cn/img/nand/00/HardwareSimulator-success.png">
+<meta property="article:published_time" content="2021-08-03T12:00:00.000Z">
+<meta property="article:modified_time" content="2021-08-04T08:43:51.604Z">
 <meta property="article:author" content="小虞">
+<meta property="article:tag" content="Hex">
+<meta property="article:tag" content="Computer Science">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.kaiux.cn/img/nand/00/HardwareSimulator.png">
 
-<link rel="canonical" href="https://www.kaiux.cn/">
+<link rel="canonical" href="https://www.kaiux.cn/2021/08/03/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E7%A1%AC%E4%BB%B6%E6%A8%A1%E6%8B%9F%E5%99%A8/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>小虞的博客</title>
+  <title>从零构造一台计算机——硬件模拟器 | 小虞的博客</title>
   
 
 
@@ -175,9 +182,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -193,10 +201,9 @@
       <meta itemprop="name" content="小虞的博客">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/03/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E7%A1%AC%E4%BB%B6%E6%A8%A1%E6%8B%9F%E5%99%A8/" class="post-title-link" itemprop="url">从零构造一台计算机——硬件模拟器</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          从零构造一台计算机——硬件模拟器
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -225,6 +232,13 @@
             </span>
 
           
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
   
   <span class="post-meta-item">
     
@@ -239,6 +253,7 @@
   </span>
   
   
+            <div class="post-description"><center>本文介绍了如何使用课程中提供的硬件模拟器去构造我们需要的逻辑电路，并且测试组件的逻辑是否正确。</center></div>
 
         </div>
       </header>
@@ -249,230 +264,97 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p><center>本文介绍了如何使用课程中提供的硬件模拟器去构造我们需要的逻辑电路，并且测试组件的逻辑是否正确。</center></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/03/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E7%A1%AC%E4%BB%B6%E6%A8%A1%E6%8B%9F%E5%99%A8/">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
+        <p>这里介绍一下Nand2Tetris课程里面用到的硬件模拟器的用法，可以在<a target="_blank" rel="noopener" href="https://www.nand2tetris.org/software">这里</a>找到下载方式。</p>
+<h2 id="hdl语法">HDL语法</h2>
+<p>假如我们要构建一个<strong>非门</strong>，这时候我们需要创建一个文件，文件名为：<code>Not.hdl</code>，内容如下: <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// This file is part of www.nand2tetris.org</span><br><span class="line">// and the book &quot;The Elements of Computing Systems&quot;</span><br><span class="line">// by Nisan and Schocken, MIT Press.</span><br><span class="line">// File name: projects/01/Not.hdl</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * Not gate:</span><br><span class="line"> * out = not in</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">CHIP Not &#123;</span><br><span class="line">    IN in;</span><br><span class="line">    OUT out;</span><br><span class="line"></span><br><span class="line">    PARTS:</span><br><span class="line">    Nand(a=in, b=in, out=out);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 以为<code>//</code>开头，或者在<code>/** **/</code>之间的是注释，这个和主流的编程语言一致。上面<code>/** **/</code>之间的是<code>Not</code>的描述。</p>
+<p><code>CHIP</code>关键字定义了组件的名称，<code>IN</code>定义了组件的输入端，<code>OUT</code>定义了组价的输出，<code>PARTS</code>下面是具体的实现。</p>
+<p>我们来具体看实现：</p>
+<p><code>Nand(a=in, b=in, out=out);</code>的意思是<code>Nand</code>（与非门，默认提供）的输入端<code>a</code>, <code>b</code>作为<code>Not</code>的输入<code>in</code>，<code>Nand</code>的输出<code>out</code>作为<code>Not</code>的输出<code>out</code>。</p>
+<p>当我们构建完<code>Not</code>的时候，我们就可以把他作为组件在后续的代码中使用了。</p>
+<p>关于课程中<a target="_blank" rel="noopener" href="https://www.nand2tetris.org/project01">project1</a>的其他组件以及对应的功能描述，可以去参考网站的资料，我已经写完并且上传到<a target="_blank" rel="noopener" href="https://github.com/Kaiux/nand2tetris">github</a>，可以供大家参考。</p>
+<h2 id="硬件模拟器">硬件模拟器</h2>
+<p>这里的硬件模拟器是java写的，所以我们首先需要安装并配置jre，这里不再赘述。配置完java之后，运行平台的脚本文件即可。例如mac运行<code>HardwareSimulator.sh</code>，windows运行<code>HardwareSimulator.bat</code>即可。</p>
+<p>打开后界面如下所示：</p>
+<p><img src="/img/nand/00/HardwareSimulator.png" /></p>
+<p>这时候我们点击<code>File -&gt; Load Chip</code>或者下面的第一个图标来加载一个组件。这时候我们可以改变<code>Input pins</code>中输入的值，然后点击<code>Run -&gt; Single Step</code>或者下面对应的图标去单步执行，执行完之后我们可以在<code>Output pins</code>中看到输出。</p>
+<p>为了验证我们写的程序是否正确，我们可以使用压缩包中提供的测试文件来测试我们的程序：测试文件以<code>.tst</code>结尾，例如<code>Not.hdl</code>对应的测试文件就是<code>Not.tst</code>。然后我们可以点击<code>File -&gt; LoadScript</code>或者对应的图标来加载测试测试脚本文件。</p>
+<p>加载完成之后，可以在右侧看到脚本文件的具体内容，同样的，我们也可以点击<code>Run -&gt; Single Step</code>来单步执行测试脚本中的测试代码，或者<code>Run -&gt; Run</code>来执行全部的测试代码。</p>
+<p>如果执行成功，我们可以在最下方看到运行成功的提示，否则会给出对应的报错。如下所示：</p>
+<p><img src="/img/nand/00/HardwareSimulator-success.png" /></p>
+<h2 id="总结">总结</h2>
+<p>到这里为止，我们了解了一些基础的逻辑电路，并且用<code>HDL</code>描述了出来。使用硬件模拟器的好处是方便我们调试，验证逻辑是否正确，也不用手动去焊接电路。</p>
+<p>课程中用到的硬件模拟器是以学习为目的的，是为了帮助我们了解计算机底层的电路结构。我这里也没有介绍的面面俱到，仅仅是介绍了最基本的用法。关于更详细的使用方式我们可以去查阅网站中的资料。</p>
+
     </div>
 
     
     
     
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
+        
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.kaiux.cn/2021/07/26/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E5%B8%83%E5%B0%94%E4%BB%A3%E6%95%B0%E5%88%B0%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/">
+  <div class="followme">
+    <p>欢迎关注我的其它发布渠道</p>
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/kaiux.jpeg">
-      <meta itemprop="name" content="小虞">
-      <meta itemprop="description" content="无为而无不为">
-    </span>
+    <div class="social-list">
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="小虞的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/26/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E5%B8%83%E5%B0%94%E4%BB%A3%E6%95%B0%E5%88%B0%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/" class="post-title-link" itemprop="url">从零构造一台计算机——布尔代数到逻辑电路</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-07-26 21:00:00" itemprop="dateCreated datePublished" datetime="2021-07-26T21:00:00+08:00">2021-07-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-27 19:42:08" itemprop="dateModified" datetime="2021-07-27T19:42:08+08:00">2021-07-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Computer-Science/" itemprop="url" rel="index"><span itemprop="name">Computer Science</span></a>
-                </span>
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/images/wechat_channel.jpeg">
+            <span class="icon">
+              <i class="fab fa-weixin"></i>
             </span>
 
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2021/07/26/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E5%B8%83%E5%B0%94%E4%BB%A3%E6%95%B0%E5%88%B0%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/07/26/从零构造一台计算机——布尔代数到逻辑电路/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
+            <span class="label">WeChat</span>
+          </a>
         </div>
-      </header>
 
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><center>本文解释了如何使用电路去实现布尔代数中的与、或、非和与非计算逻辑，为后续实现复杂逻辑电路打下基础。</center></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/07/26/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E5%B8%83%E5%B0%94%E4%BB%A3%E6%95%B0%E5%88%B0%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.kaiux.cn/2019/06/19/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Scala%E7%9A%84ClassTag/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/kaiux.jpeg">
-      <meta itemprop="name" content="小虞">
-      <meta itemprop="description" content="无为而无不为">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="小虞的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/06/19/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Scala%E7%9A%84ClassTag/" class="post-title-link" itemprop="url">如何使用Scala的ClassTag</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-06-19 09:09:07" itemprop="dateCreated datePublished" datetime="2019-06-19T09:09:07+08:00">2019-06-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-27 17:42:20" itemprop="dateModified" datetime="2021-07-27T17:42:20+08:00">2021-07-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Programing/" itemprop="url" rel="index"><span itemprop="name">Programing</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Programing/Scala/" itemprop="url" rel="index"><span itemprop="name">Scala</span></a>
-                </span>
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
             </span>
 
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus：</span>
-    
-    <a title="disqus" href="/2019/06/19/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Scala%E7%9A%84ClassTag/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/06/19/如何使用Scala的ClassTag/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
+            <span class="label">RSS</span>
+          </a>
         </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><center>本文将从一个例子开始解释Scala的ClassTag，并且逐渐理解其基本原理。</center></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/06/19/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Scala%E7%9A%84ClassTag/">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
     </div>
+  </div>
 
-    
-    
-    
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
+          <div class="post-tags">
+              <a href="/tags/Hex/" rel="tag"># Hex</a>
+              <a href="/tags/Computer-Science/" rel="tag"># Computer Science</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/07/26/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E5%B8%83%E5%B0%94%E4%BB%A3%E6%95%B0%E5%88%B0%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/" rel="prev" title="从零构造一台计算机——布尔代数到逻辑电路">
+      <i class="fa fa-chevron-left"></i> 从零构造一台计算机——布尔代数到逻辑电路
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
       </footer>
+    
   </article>
   
   
-  
-
-
   
 
 
 
           </div>
           
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -519,6 +401,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#hdl%E8%AF%AD%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">HDL语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A1%AC%E4%BB%B6%E6%A8%A1%E6%8B%9F%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">硬件模拟器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -665,59 +548,6 @@
   
 
   
-      
-
-<script>
-  if (typeof MathJax === 'undefined') {
-    window.MathJax = {
-      loader: {
-        source: {
-          '[tex]/amsCd': '[tex]/amscd',
-          '[tex]/AMScd': '[tex]/amscd'
-        }
-      },
-      tex: {
-        inlineMath: {'[+]': [['$', '$']]},
-        tags: 'ams'
-      },
-      options: {
-        renderActions: {
-          findScript: [10, doc => {
-            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
-              const display = !!node.type.match(/; *mode=display/);
-              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
-              const text = document.createTextNode('');
-              node.parentNode.replaceChild(text, node);
-              math.start = {node: text, delim: '', n: 0};
-              math.end = {node: text, delim: '', n: 0};
-              doc.math.push(math);
-            });
-          }, '', false],
-          insertedScript: [200, () => {
-            document.querySelectorAll('mjx-container').forEach(node => {
-              let target = node.parentNode;
-              if (target.nodeName.toLowerCase() === 'li') {
-                target.parentNode.classList.add('has-jax');
-              }
-            });
-          }, '', false]
-        }
-      }
-    };
-    (function () {
-      var script = document.createElement('script');
-      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
-      script.defer = true;
-      document.head.appendChild(script);
-    })();
-  } else {
-    MathJax.startup.document.state(0);
-    MathJax.texReset();
-    MathJax.typeset();
-  }
-</script>
-
-    
 
   
 
@@ -730,6 +560,26 @@
   }
   // defer loading until the whole page loading is completed
   window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://www.kaiux.cn/2021/08/03/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E7%A1%AC%E4%BB%B6%E6%A8%A1%E6%8B%9F%E5%99%A8/";
+    this.page.identifier = "2021/08/03/从零构造一台计算机——硬件模拟器/";
+    this.page.title = "从零构造一台计算机——硬件模拟器";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://kaiux.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
 </script>
 
 </body>
