@@ -145,38 +145,6 @@ x &amp; &amp; (x\ge0) \\
       </tags>
   </entry>
   <entry>
-    <title>从零构造一台计算机——硬件模拟器</title>
-    <url>/2021/08/03/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E7%A1%AC%E4%BB%B6%E6%A8%A1%E6%8B%9F%E5%99%A8/</url>
-    <content><![CDATA[<p>这里介绍一下Nand2Tetris课程里面用到的硬件模拟器的用法，可以在<a href="https://www.nand2tetris.org/software">这里</a>找到下载方式。</p>
-<h2 id="hdl语法">HDL语法</h2>
-<p>假如我们要构建一个<strong>非门</strong>，这时候我们需要创建一个文件，文件名为：<code>Not.hdl</code>，内容如下: <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// This file is part of www.nand2tetris.org</span><br><span class="line">// and the book &quot;The Elements of Computing Systems&quot;</span><br><span class="line">// by Nisan and Schocken, MIT Press.</span><br><span class="line">// File name: projects/01/Not.hdl</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * Not gate:</span><br><span class="line"> * out = not in</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">CHIP Not &#123;</span><br><span class="line">    IN in;</span><br><span class="line">    OUT out;</span><br><span class="line"></span><br><span class="line">    PARTS:</span><br><span class="line">    Nand(a=in, b=in, out=out);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 以<code>//</code>开头，或者在<code>/** **/</code>之间的是注释，这个和主流的编程语言一致。上面<code>/** **/</code>之间的是<code>Not</code>的描述。</p>
-<p><code>CHIP</code>关键字定义了组件的名称，<code>IN</code>定义了组件的输入端，<code>OUT</code>定义了组件的输出，<code>PARTS</code>下面是具体的实现。</p>
-<p>我们来具体看实现：</p>
-<p><code>Nand(a=in, b=in, out=out);</code>的意思是<code>Nand</code>（与非门，默认提供）的输入端<code>a</code>, <code>b</code>作为<code>Not</code>的输入<code>in</code>，<code>Nand</code>的输出<code>out</code>作为<code>Not</code>的输出<code>out</code>。</p>
-<p>当我们构建完<code>Not</code>的时候，我们就可以把他作为组件在后续的代码中使用了。</p>
-<p>关于课程中<a href="https://www.nand2tetris.org/project01">project1</a>的其他组件以及对应的功能描述，可以去参考网站的资料，我已经写完并且上传到<a href="https://github.com/Kaiux/nand2tetris">github</a>，可以供大家参考。</p>
-<h2 id="硬件模拟器">硬件模拟器</h2>
-<p>这里的硬件模拟器是java写的，所以我们首先需要安装并配置jre，这里不再赘述。配置完java之后，运行平台的脚本文件即可。例如mac运行<code>HardwareSimulator.sh</code>，windows运行<code>HardwareSimulator.bat</code>即可。</p>
-<p>打开后界面如下所示：</p>
-<p><img src="/img/nand/00/HardwareSimulator.png" /></p>
-<p>这时候我们点击<code>File -&gt; Load Chip</code>或者下面的第一个图标来加载一个组件。这时候我们可以改变<code>Input pins</code>中输入的值，然后点击<code>Run -&gt; Single Step</code>或者下面对应的图标去单步执行，执行完之后我们可以在<code>Output pins</code>中看到输出。</p>
-<p>为了验证我们写的程序是否正确，我们可以使用压缩包中提供的测试文件来测试我们的程序：测试文件以<code>.tst</code>结尾，例如<code>Not.hdl</code>对应的测试文件就是<code>Not.tst</code>。然后我们可以点击<code>File -&gt; LoadScript</code>或者对应的图标来加载测试测试脚本文件。</p>
-<p>加载完成之后，可以在右侧看到脚本文件的具体内容，同样的，我们也可以点击<code>Run -&gt; Single Step</code>来单步执行测试脚本中的测试代码，或者<code>Run -&gt; Run</code>来执行全部的测试代码。</p>
-<p>如果执行成功，我们可以在最下方看到运行成功的提示，否则会给出对应的报错。如下所示：</p>
-<p><img src="/img/nand/00/HardwareSimulator-success.png" /></p>
-<h2 id="总结">总结</h2>
-<p>到这里为止，我们了解了一些基础的逻辑电路，并且用<code>HDL</code>描述了出来。使用硬件模拟器的好处是方便我们调试，验证逻辑是否正确，也不用手动去焊接电路。</p>
-<p>课程中用到的硬件模拟器是以学习为目的的，是为了帮助我们了解计算机底层的电路结构。我这里也没有介绍的面面俱到，仅仅是介绍了最基本的用法。关于更详细的使用方式我们可以去查阅网站中的资料。</p>
-]]></content>
-      <categories>
-        <category>Computer Science</category>
-      </categories>
-      <tags>
-        <tag>Hex</tag>
-        <tag>Computer Science</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>如何使用Scala的ClassTag</title>
     <url>/2019/06/19/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Scala%E7%9A%84ClassTag/</url>
     <content><![CDATA[<p>Scala官方文档中对于<code>ClassTag</code>的定义如下：</p>
@@ -260,6 +228,38 @@ x &amp; &amp; (x\ge0) \\
       <tags>
         <tag>Scala</tag>
         <tag>ClassTag</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>从零构造一台计算机——硬件模拟器</title>
+    <url>/2021/08/03/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E7%A1%AC%E4%BB%B6%E6%A8%A1%E6%8B%9F%E5%99%A8/</url>
+    <content><![CDATA[<p>这里介绍一下Nand2Tetris课程里面用到的硬件模拟器的用法，可以在<a href="https://www.nand2tetris.org/software">这里</a>找到下载方式。</p>
+<h2 id="hdl语法">HDL语法</h2>
+<p>假如我们要构建一个<strong>非门</strong>，这时候我们需要创建一个文件，文件名为：<code>Not.hdl</code>，内容如下: <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">// This file is part of www.nand2tetris.org</span><br><span class="line">// and the book &quot;The Elements of Computing Systems&quot;</span><br><span class="line">// by Nisan and Schocken, MIT Press.</span><br><span class="line">// File name: projects/01/Not.hdl</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * Not gate:</span><br><span class="line"> * out = not in</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">CHIP Not &#123;</span><br><span class="line">    IN in;</span><br><span class="line">    OUT out;</span><br><span class="line"></span><br><span class="line">    PARTS:</span><br><span class="line">    Nand(a=in, b=in, out=out);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 以<code>//</code>开头，或者在<code>/** **/</code>之间的是注释，这个和主流的编程语言一致。上面<code>/** **/</code>之间的是<code>Not</code>的描述。</p>
+<p><code>CHIP</code>关键字定义了组件的名称，<code>IN</code>定义了组件的输入端，<code>OUT</code>定义了组件的输出，<code>PARTS</code>下面是具体的实现。</p>
+<p>我们来具体看实现：</p>
+<p><code>Nand(a=in, b=in, out=out);</code>的意思是<code>Nand</code>（与非门，默认提供）的输入端<code>a</code>, <code>b</code>作为<code>Not</code>的输入<code>in</code>，<code>Nand</code>的输出<code>out</code>作为<code>Not</code>的输出<code>out</code>。</p>
+<p>当我们构建完<code>Not</code>的时候，我们就可以把他作为组件在后续的代码中使用了。</p>
+<p>关于课程中<a href="https://www.nand2tetris.org/project01">project1</a>的其他组件以及对应的功能描述，可以去参考网站的资料，我已经写完并且上传到<a href="https://github.com/Kaiux/nand2tetris">github</a>，可以供大家参考。</p>
+<h2 id="硬件模拟器">硬件模拟器</h2>
+<p>这里的硬件模拟器是java写的，所以我们首先需要安装并配置jre，这里不再赘述。配置完java之后，运行平台的脚本文件即可。例如mac运行<code>HardwareSimulator.sh</code>，windows运行<code>HardwareSimulator.bat</code>即可。</p>
+<p>打开后界面如下所示：</p>
+<p><img src="/img/nand/00/HardwareSimulator.png" /></p>
+<p>这时候我们点击<code>File -&gt; Load Chip</code>或者下面的第一个图标来加载一个组件。这时候我们可以改变<code>Input pins</code>中输入的值，然后点击<code>Run -&gt; Single Step</code>或者下面对应的图标去单步执行，执行完之后我们可以在<code>Output pins</code>中看到输出。</p>
+<p>为了验证我们写的程序是否正确，我们可以使用压缩包中提供的测试文件来测试我们的程序：测试文件以<code>.tst</code>结尾，例如<code>Not.hdl</code>对应的测试文件就是<code>Not.tst</code>。然后我们可以点击<code>File -&gt; LoadScript</code>或者对应的图标来加载测试测试脚本文件。</p>
+<p>加载完成之后，可以在右侧看到脚本文件的具体内容，同样的，我们也可以点击<code>Run -&gt; Single Step</code>来单步执行测试脚本中的测试代码，或者<code>Run -&gt; Run</code>来执行全部的测试代码。</p>
+<p>如果执行成功，我们可以在最下方看到运行成功的提示，否则会给出对应的报错。如下所示：</p>
+<p><img src="/img/nand/00/HardwareSimulator-success.png" /></p>
+<h2 id="总结">总结</h2>
+<p>到这里为止，我们了解了一些基础的逻辑电路，并且用<code>HDL</code>描述了出来。使用硬件模拟器的好处是方便我们调试，验证逻辑是否正确，也不用手动去焊接电路。</p>
+<p>课程中用到的硬件模拟器是以学习为目的的，是为了帮助我们了解计算机底层的电路结构。我这里也没有介绍的面面俱到，仅仅是介绍了最基本的用法。关于更详细的使用方式我们可以去查阅网站中的资料。</p>
+]]></content>
+      <categories>
+        <category>Computer Science</category>
+      </categories>
+      <tags>
+        <tag>Hex</tag>
+        <tag>Computer Science</tag>
       </tags>
   </entry>
   <entry>
