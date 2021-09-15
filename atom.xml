@@ -6,7 +6,7 @@
   <link href="https://www.kaiux.cn/atom.xml" rel="self"/>
   
   <link href="https://www.kaiux.cn/"/>
-  <updated>2021-08-06T09:22:52.098Z</updated>
+  <updated>2021-09-15T02:00:13.273Z</updated>
   <id>https://www.kaiux.cn/</id>
   
   <author>
@@ -21,10 +21,13 @@
     <link href="https://www.kaiux.cn/2021/08/05/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E4%BA%8C%E8%BF%9B%E5%88%B6/"/>
     <id>https://www.kaiux.cn/2021/08/05/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E4%BA%8C%E8%BF%9B%E5%88%B6/</id>
     <published>2021-08-05T13:00:00.000Z</published>
-    <updated>2021-08-06T09:22:52.098Z</updated>
+    <updated>2021-09-15T02:00:13.273Z</updated>
     
     
-    <summary type="html">&lt;center&gt;本文解释了什么是二进制，二进制在计算机中的表示形式，补码设计的巧妙之处。深入浅出，并给出了简单的证明。&lt;/center&gt;</summary>
+    <summary type="html">&lt;h2 id=&quot;二进制的定义&quot;&gt;二进制的定义&lt;/h2&gt;
+&lt;p&gt;人类发明&lt;code&gt;0,1,2,3,4,5,6,7,8,9&lt;/code&gt;这10个数字，大概率是因为我们有十个手指。假如我们把这种计数方式称为十进制计数法，然后我们来到了一个世界，那里面的人只有2个手指。我们该如何用十进制的思想去用创造出二进制呢。&lt;/p&gt;
+&lt;p&gt;简单约定一下，后面用下标表示进制，比如&lt;span class=&quot;math inline&quot;&gt;\(10_2\)&lt;/span&gt;表示二进制，而&lt;span class=&quot;math inline&quot;&gt;\(10_{10}\)&lt;/span&gt;表示十进制。&lt;/p&gt;
+&lt;p&gt;首先，我们能用的数字只有&lt;code&gt;0,1&lt;/code&gt;这2个，忘掉十进制中其余的数字。那么我们如何计数呢？以数苹果为例，在十进制中，我们数到第&lt;span class=&quot;math inline&quot;&gt;\(9_{10}\)&lt;/span&gt;个苹果的时候，我们需要做一个操作就是进位，然后低位置为&lt;code&gt;0&lt;/code&gt;。现在来到二进制，我们如何表示下面苹果的数量：&lt;/p&gt;</summary>
     
     
     
@@ -42,10 +45,12 @@
     <link href="https://www.kaiux.cn/2021/08/03/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E7%A1%AC%E4%BB%B6%E6%A8%A1%E6%8B%9F%E5%99%A8/"/>
     <id>https://www.kaiux.cn/2021/08/03/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E7%A1%AC%E4%BB%B6%E6%A8%A1%E6%8B%9F%E5%99%A8/</id>
     <published>2021-08-03T12:00:00.000Z</published>
-    <updated>2021-08-04T09:50:04.153Z</updated>
+    <updated>2021-09-15T02:00:03.986Z</updated>
     
     
-    <summary type="html">&lt;center&gt;本文介绍了如何使用课程中提供的硬件模拟器去构造我们需要的逻辑电路，并且测试组件的逻辑是否正确。&lt;/center&gt;</summary>
+    <summary type="html">&lt;p&gt;这里介绍一下Nand2Tetris课程里面用到的硬件模拟器的用法，可以在&lt;a href=&quot;https://www.nand2tetris.org/software&quot;&gt;这里&lt;/a&gt;找到下载方式。&lt;/p&gt;
+&lt;h2 id=&quot;hdl语法&quot;&gt;HDL语法&lt;/h2&gt;
+&lt;p&gt;假如我们要构建一个&lt;strong&gt;非门&lt;/strong&gt;，这时候我们需要创建一个文件，文件名为：&lt;code&gt;Not.hdl&lt;/code&gt;，内容如下: &lt;figure class=&quot;highlight plaintext&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;// This file is part of www.nand2tetris.org&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;// and the book &amp;quot;The Elements of Computing Systems&amp;quot;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;// by Nisan and Schocken, MIT Press.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;// File name: projects/01/Not.hdl&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;/**&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; * Not gate:&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; * out = not in&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt; */&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;CHIP Not &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    IN in;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    OUT out;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    PARTS:&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Nand(a=in, b=in, out=out);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;</summary>
     
     
     
@@ -63,10 +68,11 @@
     <link href="https://www.kaiux.cn/2021/07/26/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E5%B8%83%E5%B0%94%E4%BB%A3%E6%95%B0%E5%88%B0%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/"/>
     <id>https://www.kaiux.cn/2021/07/26/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E5%B8%83%E5%B0%94%E4%BB%A3%E6%95%B0%E5%88%B0%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/</id>
     <published>2021-07-26T13:00:00.000Z</published>
-    <updated>2021-09-13T11:50:25.638Z</updated>
+    <updated>2021-09-15T02:00:15.122Z</updated>
     
     
-    <summary type="html">&lt;center&gt;本文解释了如何使用电路去实现布尔代数中的与、或、非和与非计算逻辑，为后续实现复杂逻辑电路打下基础。&lt;/center&gt;</summary>
+    <summary type="html">&lt;p&gt;最近在学习coursera上的一门课：&lt;a href=&quot;https://www.coursera.org/learn/build-a-computer&quot;&gt;Build a Modern Computer from First Principles: From Nand to Tetris&lt;/a&gt;，我会坚持更新这一系列的博客，作为记录自己学习的过程，同时也倒逼自己去把学会的东西再讲出来，来深入理解。&lt;/p&gt;
+&lt;p&gt;其实我们生活中所有的电子设备都是基于&lt;strong&gt;逻辑门电路&lt;/strong&gt;（后面会解释）来构造的。这是很神奇的一件事情，我在中学的时候就好奇计算机是如何完成这一些复杂的操作的，我相信很多人也都好奇过。这门课的愿景就是带我们从一个最基础的电路开始，构造出一个完整的计算机。&lt;/p&gt;</summary>
     
     
     
@@ -84,10 +90,16 @@
     <link href="https://www.kaiux.cn/2019/06/19/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Scala%E7%9A%84ClassTag/"/>
     <id>https://www.kaiux.cn/2019/06/19/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Scala%E7%9A%84ClassTag/</id>
     <published>2019-06-19T01:09:07.000Z</published>
-    <updated>2021-07-27T09:42:20.637Z</updated>
+    <updated>2021-09-15T01:59:56.189Z</updated>
     
     
-    <summary type="html">&lt;center&gt;本文将从一个例子开始解释Scala的ClassTag，并且逐渐理解其基本原理。&lt;/center&gt;</summary>
+    <summary type="html">&lt;p&gt;Scala官方文档中对于&lt;code&gt;ClassTag&lt;/code&gt;的定义如下：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;ClassTag[T]&lt;/code&gt;保存着在运行时被JVM擦除的类型&lt;code&gt;T&lt;/code&gt;的信息。当我们在运行时想获得被实例化的&lt;code&gt;Array&lt;/code&gt;的类型信息的时候，这个特性会比较有用。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;下面请看一个具体的场景：&lt;/p&gt;
+&lt;h2 id=&quot;场景&quot;&gt;场景&lt;/h2&gt;
+&lt;p&gt;假定有一个&lt;code&gt;Map[String, Any]&lt;/code&gt;，给定一个指定的key，我们需要检查Map中是否存在该key对应的value，如果存在，则优雅地返回这个值。看起来很简单，下面让我们来实现它，并且逐渐理解&lt;code&gt;ClassTag&lt;/code&gt;。&lt;/p&gt;</summary>
     
     
     
