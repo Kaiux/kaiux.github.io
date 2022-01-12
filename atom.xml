@@ -6,7 +6,7 @@
   <link href="https://www.kaiux.cn/atom.xml" rel="self"/>
   
   <link href="https://www.kaiux.cn/"/>
-  <updated>2022-01-12T07:06:25.266Z</updated>
+  <updated>2022-01-12T12:08:32.333Z</updated>
   <id>https://www.kaiux.cn/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>从零构造一台计算机——机器语言</title>
+    <link href="https://www.kaiux.cn/2022/01/12/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E6%9C%BA%E5%99%A8%E8%AF%AD%E8%A8%80/"/>
+    <id>https://www.kaiux.cn/2022/01/12/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E6%9C%BA%E5%99%A8%E8%AF%AD%E8%A8%80/</id>
+    <published>2022-01-12T12:05:00.000Z</published>
+    <updated>2022-01-12T12:08:32.333Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;计算机体系结构&quot;&gt;计算机体系结构&lt;/h2&gt;
+&lt;p&gt;这是一个老生常谈的问题，主要包括CPU，内存，输入和输出。&lt;/p&gt;
+&lt;p&gt;其中内存又可以进一步划分为指令区和数据区；CPU则包含了ALU和寄存器，寄存器进一步可以分为数据寄存器，地址寄存器，通用寄存器；输入可以来自键盘，鼠标，硬盘等，输出也可以是显示器，内存，硬盘等。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/CtCn_TTL5q1CXeqsZVsTxTs8ZIZUCk7CBIxoVmROBwk.png&quot; /&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Computer Science" scheme="https://www.kaiux.cn/categories/Computer-Science/"/>
+    
+    
+    <category term="Hex" scheme="https://www.kaiux.cn/tags/Hex/"/>
+    
+    <category term="Computer Science" scheme="https://www.kaiux.cn/tags/Computer-Science/"/>
+    
+  </entry>
   
   <entry>
     <title>从零构造一台计算机——时序逻辑</title>
