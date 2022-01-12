@@ -6,7 +6,7 @@
   <link href="https://www.kaiux.cn/atom.xml" rel="self"/>
   
   <link href="https://www.kaiux.cn/"/>
-  <updated>2021-09-15T02:10:25.268Z</updated>
+  <updated>2022-01-12T07:06:25.266Z</updated>
   <id>https://www.kaiux.cn/</id>
   
   <author>
@@ -15,6 +15,53 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>从零构造一台计算机——时序逻辑</title>
+    <link href="https://www.kaiux.cn/2022/01/12/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91/"/>
+    <id>https://www.kaiux.cn/2022/01/12/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91/</id>
+    <published>2022-01-12T07:05:00.000Z</published>
+    <updated>2022-01-12T07:06:25.266Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;时钟&quot;&gt;时钟&lt;/h2&gt;
+&lt;p&gt;这里的时钟通常是指时钟脉冲。如果没有时钟脉冲，CPU就是静态的，可以简单理解为给定输入，给出输出，没有什么动力可以驱动CPU做下一步的事情，我们需要手动改变输入，这时候的CPU就像是一个计算器，或者算盘一样。&lt;/p&gt;
+&lt;p&gt;时钟脉冲是CPU的心脏，给了CPU动力去取下一条指令并执行。&lt;/p&gt;
+&lt;p&gt;时钟脉冲的逻辑其实就是振荡器，这里不再赘述，可以看《穿越计算机的迷雾》&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Computer Science" scheme="https://www.kaiux.cn/categories/Computer-Science/"/>
+    
+    
+    <category term="Hex" scheme="https://www.kaiux.cn/tags/Hex/"/>
+    
+    <category term="Computer Science" scheme="https://www.kaiux.cn/tags/Computer-Science/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>从零构造一台计算机——二进制</title>
+    <link href="https://www.kaiux.cn/2022/01/12/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E5%AF%84%E5%AD%98%E5%99%A8/"/>
+    <id>https://www.kaiux.cn/2022/01/12/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E5%AF%84%E5%AD%98%E5%99%A8/</id>
+    <published>2022-01-12T07:00:00.000Z</published>
+    <updated>2022-01-12T07:03:45.830Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;触发器&quot;&gt;触发器&lt;/h2&gt;
+&lt;p&gt;触发器的逻辑电路：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/y50a3eb4PSbAmSyT4xyJa4af-hIpIEQCsXoirz5jedM.gif&quot; /&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Computer Science" scheme="https://www.kaiux.cn/categories/Computer-Science/"/>
+    
+    
+    <category term="Hex" scheme="https://www.kaiux.cn/tags/Hex/"/>
+    
+    <category term="Computer Science" scheme="https://www.kaiux.cn/tags/Computer-Science/"/>
+    
+  </entry>
   
   <entry>
     <title>从零构造一台计算机——二进制</title>
