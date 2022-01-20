@@ -146,36 +146,6 @@ x &amp; &amp; (x\ge0) \\
       </tags>
   </entry>
   <entry>
-    <title>从零构造一台计算机——寄存器</title>
-    <url>/2022/01/12/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E5%AF%84%E5%AD%98%E5%99%A8/</url>
-    <content><![CDATA[<h2 id="触发器">触发器</h2>
-<p>触发器的逻辑电路：</p>
-<p><img src="/images/y50a3eb4PSbAmSyT4xyJa4af-hIpIEQCsXoirz5jedM.gif" /></p>
-<span id="more"></span>
-<p>触发器可以记住当前的状态，输入和S,R的关系如下：</p>
-<p><img src="/images/CNitTfECEIU3B17Ac5l37mjEchzI1bB0GIHZ6PoDfDA.png" /></p>
-<p>当我们需要保存一个比特时，可以借助触发器，但是触发器有 <span class="math inline">\(Q\)</span> 和 <span class="math inline">\(\overline{Q}\)</span> 2个输出，这里我们选择 <span class="math inline">\(Q\)</span> ，没有什么特殊的考虑，就是一种约定。</p>
-<p>当我们需要Q输出为1的时候，S和R分为为0和1，否则反之。因为S和R的总是相反的，所以我们可以这么做，在R上面加一个非门，这样就可以用一个输入代替了:</p>
-<p><img src="/images/pQWXf6fXz9sypXqGgsZcdq0SyIDPRPiYDjEhU83NQsw.png" /></p>
-<p>但是这时候的触发器还是不具有“记忆功能”，因为输入不是0就是1，所以输出也一样，这时候和导线就没有区别了。</p>
-<p>想要的效果是，有一个控制端，可以控制触发器什么时候加载输入，当不加载输入的时候，输出就是保存的值，于是我们可以这么做:</p>
-<p><img src="/images/W6y6r3-KK9jucfGQASc5639FagC7n98UiyfsPum1ZV4.png" /></p>
-<p>加一个控制端CP，当CP是0的时候，触发器的输入就是0，不管D怎么变，都不会改变触发器的输出。只有当CP为1的时候，触发器才能保存D的内容。</p>
-<p>我们把上面的触发器称为D触发器，D是Data的意思，符号如下：</p>
-<p><img src="/images/xJFKPNz-JDzAhlNbUbpbnKg-_KdxJbfj6kBAhtE8RkU.png" /></p>
-<h2 id="寄存器">寄存器</h2>
-<p>我们可以用多个触发器组成一个寄存器，多个寄存器再组成内存：</p>
-<p><img src="/images/kSwhCoiLzQ4Dc1mBaYNkOc1L9mUPRLx5Q86ZCRWVsxs.png" /></p>
-]]></content>
-      <categories>
-        <category>Computer Science</category>
-      </categories>
-      <tags>
-        <tag>Hex</tag>
-        <tag>Computer Science</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>从零构造一台计算机——从加法器到ALU</title>
     <url>/2022/01/20/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E4%BB%8E%E5%8A%A0%E6%B3%95%E5%99%A8%E5%88%B0ALU/</url>
     <content><![CDATA[<h2 id="加法器">加法器</h2>
@@ -200,6 +170,36 @@ x &amp; &amp; (x\ge0) \\
 <p><img src="/images/34a7f047-5417-41ff-8b26-e70814d49b57.png" /></p>
 <p>没啥特别的，用逻辑电路直接就可以实现了，实现逻辑都在代码里：</p>
 <figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="code"><pre><span class="line">CHIP ALU &#123;</span><br><span class="line">    IN  </span><br><span class="line">        x[16], y[16],  // 16-bit inputs        </span><br><span class="line">        zx, // zero the x input?</span><br><span class="line">        nx, // negate the x input?</span><br><span class="line">        zy, // zero the y input?</span><br><span class="line">        ny, // negate the y input?</span><br><span class="line">        f,  // compute out = x + y (if 1) or x &amp; y (if 0)</span><br><span class="line">        no; // negate the out output?</span><br><span class="line"></span><br><span class="line">    OUT </span><br><span class="line">        out[16], // 16-bit output</span><br><span class="line">        zr, // 1 if (out == 0), 0 otherwise</span><br><span class="line">        ng; // 1 if (out &lt; 0),  0 otherwise</span><br><span class="line"></span><br><span class="line">    PARTS:</span><br><span class="line">    //zx, nx</span><br><span class="line">    Mux16(a=x, b=false, sel=zx, out=zxout);</span><br><span class="line">    Not16(in=zxout, out=notx);</span><br><span class="line">    Mux16(a=zxout, b=notx, sel=nx, out=nxout);</span><br><span class="line">    //zy, ny</span><br><span class="line">    Mux16(a=y, b=false, sel=zy, out=zyout);</span><br><span class="line">    Not16(in=zyout, out=noty);</span><br><span class="line">    Mux16(a=zyout, b=noty, sel=ny, out=nyout);</span><br><span class="line">    //f</span><br><span class="line">    Add16(a=nxout, b=nyout, out=xpy);</span><br><span class="line">    And16(a=nxout, b=nyout, out=xay);</span><br><span class="line">    Mux16(a=xay, b=xpy, sel=f, out=fout);</span><br><span class="line">    //no</span><br><span class="line">    Not16(in=fout, out=nfout);</span><br><span class="line">    Mux16(a=fout, b=nfout, sel=no, out[15]=ng, out[0]=out0, out[1]=out1, out[2]=out2, out[3]=out3, out[4]=out4, out[5]=out5, out[6]=out6, out[7]=out7, out[8]=out8, out[9]=out9, out[10]=out10, out[11]=out11, out[12]=out12, out[13]=out13, out[14]=out14, out[15]=out15, out=out);</span><br><span class="line">    //zr</span><br><span class="line">    Or(a=out0, b=out1, out=or1);</span><br><span class="line">    Or(a=or1, b=out2, out=or2);</span><br><span class="line">    Or(a=or2, b=out3, out=or3);</span><br><span class="line">    Or(a=or3, b=out4, out=or4);</span><br><span class="line">    Or(a=or4, b=out5, out=or5);</span><br><span class="line">    Or(a=or5, b=out6, out=or6);</span><br><span class="line">    Or(a=or6, b=out7, out=or7);</span><br><span class="line">    Or(a=or7, b=out8, out=or8);</span><br><span class="line">    Or(a=or8, b=out9, out=or9);</span><br><span class="line">    Or(a=or9, b=out10, out=or10);</span><br><span class="line">    Or(a=or10, b=out11, out=or11);</span><br><span class="line">    Or(a=or11, b=out12, out=or12);</span><br><span class="line">    Or(a=or12, b=out13, out=or13);</span><br><span class="line">    Or(a=or13, b=out14, out=or14);</span><br><span class="line">    Or(a=or14, b=out15, out=or15);</span><br><span class="line">    Not(in=or15, out=zr);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Computer Science</category>
+      </categories>
+      <tags>
+        <tag>Hex</tag>
+        <tag>Computer Science</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>从零构造一台计算机——寄存器</title>
+    <url>/2022/01/12/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E5%AF%84%E5%AD%98%E5%99%A8/</url>
+    <content><![CDATA[<h2 id="触发器">触发器</h2>
+<p>触发器的逻辑电路：</p>
+<p><img src="/images/y50a3eb4PSbAmSyT4xyJa4af-hIpIEQCsXoirz5jedM.gif" /></p>
+<span id="more"></span>
+<p>触发器可以记住当前的状态，输入和S,R的关系如下：</p>
+<p><img src="/images/CNitTfECEIU3B17Ac5l37mjEchzI1bB0GIHZ6PoDfDA.png" /></p>
+<p>当我们需要保存一个比特时，可以借助触发器，但是触发器有 <span class="math inline">\(Q\)</span> 和 <span class="math inline">\(\overline{Q}\)</span> 2个输出，这里我们选择 <span class="math inline">\(Q\)</span> ，没有什么特殊的考虑，就是一种约定。</p>
+<p>当我们需要Q输出为1的时候，S和R分为为0和1，否则反之。因为S和R的总是相反的，所以我们可以这么做，在R上面加一个非门，这样就可以用一个输入代替了:</p>
+<p><img src="/images/pQWXf6fXz9sypXqGgsZcdq0SyIDPRPiYDjEhU83NQsw.png" /></p>
+<p>但是这时候的触发器还是不具有“记忆功能”，因为输入不是0就是1，所以输出也一样，这时候和导线就没有区别了。</p>
+<p>想要的效果是，有一个控制端，可以控制触发器什么时候加载输入，当不加载输入的时候，输出就是保存的值，于是我们可以这么做:</p>
+<p><img src="/images/W6y6r3-KK9jucfGQASc5639FagC7n98UiyfsPum1ZV4.png" /></p>
+<p>加一个控制端CP，当CP是0的时候，触发器的输入就是0，不管D怎么变，都不会改变触发器的输出。只有当CP为1的时候，触发器才能保存D的内容。</p>
+<p>我们把上面的触发器称为D触发器，D是Data的意思，符号如下：</p>
+<p><img src="/images/xJFKPNz-JDzAhlNbUbpbnKg-_KdxJbfj6kBAhtE8RkU.png" /></p>
+<h2 id="寄存器">寄存器</h2>
+<p>我们可以用多个触发器组成一个寄存器，多个寄存器再组成内存：</p>
+<p><img src="/images/kSwhCoiLzQ4Dc1mBaYNkOc1L9mUPRLx5Q86ZCRWVsxs.png" /></p>
 ]]></content>
       <categories>
         <category>Computer Science</category>
@@ -603,6 +603,37 @@ x &amp; &amp; (x\ge0) \\
       <tags>
         <tag>Scala</tag>
         <tag>ClassTag</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>从零构造一台计算机——计算机体系结构</title>
+    <url>/2022/01/20/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/</url>
+    <content><![CDATA[<h2 id="冯诺伊曼结构">冯·诺伊曼结构</h2>
+<p>这也是一个基本概念，不再赘述，参考：<a href="https://en.wikipedia.org/wiki/Von_Neumann_architecture">维基百科</a></p>
+<h2 id="内存">内存</h2>
+<p>内存的实现不难，需要注意的是寻址方式和地址空间的映射：</p>
+<p><img src="/images/MSmz4sT-kJG2VC2BYNqyajys6-Y3tPOGuFColvUSnak.png" /></p>
+<span id="more"></span>
+<p>HDL如下：</p>
+<figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="code"><pre><span class="line">CHIP Memory &#123;</span><br><span class="line">    IN in[16], load, address[15];</span><br><span class="line">    OUT out[16];</span><br><span class="line"></span><br><span class="line">    PARTS:</span><br><span class="line">    // Put your code here:</span><br><span class="line"></span><br><span class="line">    DMux(in=load, sel=address[14], a=loadRam, b=loadOther);</span><br><span class="line">    RAM16K(in=in, load=loadRam, address=address[0..13], out=outRam);</span><br><span class="line">    DMux(in=loadOther, sel=address[13], a=loadScreen, b=loadKeyboard);</span><br><span class="line">    Screen(in=in, load=loadScreen, address=address[0..12], out=outScreen);</span><br><span class="line">    Keyboard(out=outKeyboard);</span><br><span class="line">    Mux16(a=outScreen, b=outKeyboard, sel=address[13], out=outOther);</span><br><span class="line">    Mux16(a=outRam, b=outOther, sel=address[14], out=out);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="cpu">CPU</h2>
+<p>在时钟脉冲的作用下，CPU不断取指令然后执行，关键在于如何解码，然后将对应的控制位传给ALU，最后得到输出：</p>
+<p><img src="/images/fiJpFDfprA-u2wKkobEwm-noBidGrwbouob2oHIjORM.png" /></p>
+<p>用之前的逻辑电路就可以构建出CPU了，略复杂，需要慢慢品 :)</p>
+<p>HDL如下：</p>
+<figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="code"><pre><span class="line">CHIP CPU &#123;</span><br><span class="line"></span><br><span class="line">    IN  inM[16],         // M value input  (M = contents of RAM[A])</span><br><span class="line">        instruction[16], // Instruction for execution</span><br><span class="line">        reset;           // Signals whether to re-start the current</span><br><span class="line">                         // program (reset==1) or continue executing</span><br><span class="line">                         // the current program (reset==0).</span><br><span class="line"></span><br><span class="line">    OUT outM[16],        // M value output</span><br><span class="line">        writeM,          // Write to M? </span><br><span class="line">        addressM[15],    // Address in data memory (of M)</span><br><span class="line">        pc[15];          // address of next instruction</span><br><span class="line"></span><br><span class="line">    PARTS:</span><br><span class="line">    // 指令的最大地址位 如果为1则是C指令 为0则是A指令</span><br><span class="line">    Not(in = instruction[15], out = isA);</span><br><span class="line">    // 对isC再次取返 判断是否C指令 读者可以自行用1或0代入想像一下 isC实际上就是instruction[15]的值</span><br><span class="line">    Not(in = isA, out = isC);</span><br><span class="line"></span><br><span class="line">    // 如果是C指令并且指令指定ALU输出存到AR 则将ALU的输出 输入到AR 否则将指令输入到AR</span><br><span class="line">    And(a = isC, b = instruction[5], out = isLoadAluOut);</span><br><span class="line">    Mux16(a = instruction, b = outALU, sel = isLoadAluOut, out = inAR);</span><br><span class="line"></span><br><span class="line">    // 如果为A指令或指令指定输出到A处理器 则将AR的load位置1</span><br><span class="line">    Or(a = isA, b = instruction[5], out = isLoadAR);</span><br><span class="line">    ARegister(in = inAR, load = isLoadAR, out = outAR, out[0..14] = addressM);</span><br><span class="line"></span><br><span class="line">    // 根据指令中的a位域判断将AR的输出或者inM输入到ALU</span><br><span class="line">    Mux16(a = outAR, b = inM, sel = instruction[12], out = outAM);</span><br><span class="line"></span><br><span class="line">    // 如果是C指令并且规定写入到M</span><br><span class="line">    And(a = isC, b = instruction[3], out = writeM);</span><br><span class="line"></span><br><span class="line">    // 如果是C指令并且规定写入到DR</span><br><span class="line">    And(a = instruction[4], b = isC, out = isLoadDR); </span><br><span class="line">    DRegister(in = outALU, load = isLoadDR, out = outDR);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    And(a = isC, b = instruction[6], out = no);</span><br><span class="line">    And(a = isC, b = instruction[7], out = f);</span><br><span class="line">    And(a = isC, b = instruction[8], out = ny);</span><br><span class="line">    And(a = isC, b = instruction[9], out = zy);</span><br><span class="line">    And(a = isC, b = instruction[10], out = nx);</span><br><span class="line">    And(a = isC, b = instruction[11], out = zx);</span><br><span class="line"></span><br><span class="line">    ALU(x = outDR, y = outAM, zx = zx, nx = nx, zy = zy, ny = ny, f = f, no = no, out = outALU, out = outM, zr=zr, ng=ng);</span><br><span class="line"></span><br><span class="line">    // 根据j位域和ALU的zr、ng位来判断跳转</span><br><span class="line">    And(a = isC, b = instruction[0], out = isGT);</span><br><span class="line">    And(a = isC, b = instruction[1], out = isEQ);</span><br><span class="line">    And(a = isC, b = instruction[2], out = isLT);</span><br><span class="line"></span><br><span class="line">    And(a = ng, b = isLT, out = isLtJump);</span><br><span class="line">    And(a = zr, b = isEQ, out = isEqJump);</span><br><span class="line"></span><br><span class="line">    // 输出是否大于0</span><br><span class="line">    Not(in = ng, out = notNg);</span><br><span class="line">    Not(in = zr, out = notZr);</span><br><span class="line">    And(a = notNg, b = notZr, out = isOutGt);</span><br><span class="line">    </span><br><span class="line">    And(a = isOutGt, b = isGT, out = isGtJump);</span><br><span class="line"></span><br><span class="line">    Or(a = isLtJump, b = isEqJump, out = isJump);</span><br><span class="line">    Or(a = isJump, b = isGtJump, out = jump);</span><br><span class="line"></span><br><span class="line">    PC(in = outAR, load = jump, inc = true, reset = reset, out[0..14] = pc);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="计算机">计算机</h2>
+<p>最后把CPU, 内存组装起来就可以得到计算机了, 输入输出设备已经映射到内存中:</p>
+<figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="code"><pre><span class="line">CHIP Computer &#123;</span><br><span class="line"></span><br><span class="line">    IN reset;</span><br><span class="line"></span><br><span class="line">    PARTS:</span><br><span class="line">    CPU(reset = reset, inM = outMemory, instruction = outROM, outM = outMvalue, writeM = isLoadValue, addressM = outAddressM, pc = outPC);</span><br><span class="line">    Memory(in = outMvalue, load = isLoadValue, address = outAddressM, out = outMemory);</span><br><span class="line">    ROM32K(address = outPC, out = outROM);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考">参考</h2>
+<p><a href="https://github.com/woai3c/nand2tetris">github: woai3c/nand2tetris</a></p>
+]]></content>
+      <categories>
+        <category>Computer Science</category>
+      </categories>
+      <tags>
+        <tag>Hex</tag>
+        <tag>Computer Science</tag>
       </tags>
   </entry>
 </search>
