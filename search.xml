@@ -146,40 +146,6 @@ x &amp; &amp; (x\ge0) \\
       </tags>
   </entry>
   <entry>
-    <title>从零构造一台计算机——从加法器到ALU</title>
-    <url>/2022/01/20/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E4%BB%8E%E5%8A%A0%E6%B3%95%E5%99%A8%E5%88%B0ALU/</url>
-    <content><![CDATA[<h2 id="加法器">加法器</h2>
-<p>在《二进制》文章中，讲了补码，利用补码我们可以用加法代替减法。</p>
-<p>所以我们需要一个加法器，下面看看如何用前面的基础逻辑电路组装一个加法器。</p>
-<h3 id="半加器">半加器</h3>
-<p>半加器是对2个二进制数字相加得到结果，结果可能有进位。</p>
-<p>但是实际上一共也只有4中情况，我们不妨全部列出来看看：</p>
-<span id="more"></span>
-<p><img src="/images/fe1e84f8-9eb0-45eb-9e36-d3cb1c8ccb92.png" /></p>
-<p>不难发现<code>sum = a Xor b</code> ，<code>carry = a And b</code></p>
-<p>所以其实半加器很简单，用HDL可以这么描述：</p>
-<figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="code"><pre><span class="line">CHIP HalfAdder &#123;</span><br><span class="line">    IN a, b;    // 1-bit inputs</span><br><span class="line">    OUT sum,    // Right bit of a + b </span><br><span class="line">        carry;  // Left bit of a + b</span><br><span class="line"></span><br><span class="line">    PARTS:</span><br><span class="line">    Xor(a=a, b=b, out=sum);</span><br><span class="line">    And(a=a, b=b, out=carry);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="全加器">全加器</h3>
-<p>全加器是带进位的加法，也就是三位数相加，一共有8种情况，我们也可以都列出来看看：</p>
-<p><img src="/images/1869b8b2-52d7-4ded-b443-a32f2ce74d59.png" /></p>
-<p>我们可以用2个半加器实现，但是仔细观察也可以发现，其实<code>sum = a Xor b Xor c</code> ，<code>carry = ( ( a Xor b ) And c ) Or ( a And b )</code> ，其实这里面有个小技巧，就是把所有是1的拿出来做Or操作，然后简化一下就得到了最终的表达式。</p>
-<p>我们用HDL可以这么描述全加器：</p>
-<figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="code"><pre><span class="line">CHIP FullAdder &#123;</span><br><span class="line">    IN a, b, c;  // 1-bit inputs</span><br><span class="line">    OUT sum,     // Right bit of a + b + c</span><br><span class="line">        carry;   // Left bit of a + b + c</span><br><span class="line"></span><br><span class="line">    PARTS:</span><br><span class="line">    Xor(a=a, b=b, out=out1);</span><br><span class="line">    Xor(a=out1, b=c, out=sum);</span><br><span class="line">    And(a=out1, b=c, out=out2);</span><br><span class="line">    And(a=a, b=b, out=out3);</span><br><span class="line">    Or(a=out2, b=out3, out=carry);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="算术逻辑单元alu">算术逻辑单元（ALU）</h2>
-<p>ALU的功能如下表所示：</p>
-<p><img src="/images/34a7f047-5417-41ff-8b26-e70814d49b57.png" /></p>
-<p>没啥特别的，用逻辑电路直接就可以实现了，实现逻辑都在代码里：</p>
-<figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="code"><pre><span class="line">CHIP ALU &#123;</span><br><span class="line">    IN  </span><br><span class="line">        x[16], y[16],  // 16-bit inputs        </span><br><span class="line">        zx, // zero the x input?</span><br><span class="line">        nx, // negate the x input?</span><br><span class="line">        zy, // zero the y input?</span><br><span class="line">        ny, // negate the y input?</span><br><span class="line">        f,  // compute out = x + y (if 1) or x &amp; y (if 0)</span><br><span class="line">        no; // negate the out output?</span><br><span class="line"></span><br><span class="line">    OUT </span><br><span class="line">        out[16], // 16-bit output</span><br><span class="line">        zr, // 1 if (out == 0), 0 otherwise</span><br><span class="line">        ng; // 1 if (out &lt; 0),  0 otherwise</span><br><span class="line"></span><br><span class="line">    PARTS:</span><br><span class="line">    //zx, nx</span><br><span class="line">    Mux16(a=x, b=false, sel=zx, out=zxout);</span><br><span class="line">    Not16(in=zxout, out=notx);</span><br><span class="line">    Mux16(a=zxout, b=notx, sel=nx, out=nxout);</span><br><span class="line">    //zy, ny</span><br><span class="line">    Mux16(a=y, b=false, sel=zy, out=zyout);</span><br><span class="line">    Not16(in=zyout, out=noty);</span><br><span class="line">    Mux16(a=zyout, b=noty, sel=ny, out=nyout);</span><br><span class="line">    //f</span><br><span class="line">    Add16(a=nxout, b=nyout, out=xpy);</span><br><span class="line">    And16(a=nxout, b=nyout, out=xay);</span><br><span class="line">    Mux16(a=xay, b=xpy, sel=f, out=fout);</span><br><span class="line">    //no</span><br><span class="line">    Not16(in=fout, out=nfout);</span><br><span class="line">    Mux16(a=fout, b=nfout, sel=no, out[15]=ng, out[0]=out0, out[1]=out1, out[2]=out2, out[3]=out3, out[4]=out4, out[5]=out5, out[6]=out6, out[7]=out7, out[8]=out8, out[9]=out9, out[10]=out10, out[11]=out11, out[12]=out12, out[13]=out13, out[14]=out14, out[15]=out15, out=out);</span><br><span class="line">    //zr</span><br><span class="line">    Or(a=out0, b=out1, out=or1);</span><br><span class="line">    Or(a=or1, b=out2, out=or2);</span><br><span class="line">    Or(a=or2, b=out3, out=or3);</span><br><span class="line">    Or(a=or3, b=out4, out=or4);</span><br><span class="line">    Or(a=or4, b=out5, out=or5);</span><br><span class="line">    Or(a=or5, b=out6, out=or6);</span><br><span class="line">    Or(a=or6, b=out7, out=or7);</span><br><span class="line">    Or(a=or7, b=out8, out=or8);</span><br><span class="line">    Or(a=or8, b=out9, out=or9);</span><br><span class="line">    Or(a=or9, b=out10, out=or10);</span><br><span class="line">    Or(a=or10, b=out11, out=or11);</span><br><span class="line">    Or(a=or11, b=out12, out=or12);</span><br><span class="line">    Or(a=or12, b=out13, out=or13);</span><br><span class="line">    Or(a=or13, b=out14, out=or14);</span><br><span class="line">    Or(a=or14, b=out15, out=or15);</span><br><span class="line">    Not(in=or15, out=zr);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Computer Science</category>
-      </categories>
-      <tags>
-        <tag>Hex</tag>
-        <tag>Computer Science</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>从零构造一台计算机——寄存器</title>
     <url>/2022/01/12/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E5%AF%84%E5%AD%98%E5%99%A8/</url>
     <content><![CDATA[<h2 id="触发器">触发器</h2>
@@ -210,20 +176,30 @@ x &amp; &amp; (x\ge0) \\
       </tags>
   </entry>
   <entry>
-    <title>从零构造一台计算机——时序逻辑</title>
-    <url>/2022/01/12/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91/</url>
-    <content><![CDATA[<h2 id="时钟">时钟</h2>
-<p>这里的时钟通常是指时钟脉冲。如果没有时钟脉冲，CPU就是静态的，可以简单理解为给定输入，给出输出，没有什么动力可以驱动CPU做下一步的事情，我们需要手动改变输入，这时候的CPU就像是一个计算器，或者算盘一样。</p>
-<p>时钟脉冲是CPU的心脏，给了CPU动力去取下一条指令并执行。</p>
-<p>时钟脉冲的逻辑其实就是振荡器，这里不再赘述，可以看《穿越计算机的迷雾》</p>
+    <title>从零构造一台计算机——从加法器到ALU</title>
+    <url>/2022/01/20/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E4%BB%8E%E5%8A%A0%E6%B3%95%E5%99%A8%E5%88%B0ALU/</url>
+    <content><![CDATA[<h2 id="加法器">加法器</h2>
+<p>在《二进制》文章中，讲了补码，利用补码我们可以用加法代替减法。</p>
+<p>所以我们需要一个加法器，下面看看如何用前面的基础逻辑电路组装一个加法器。</p>
+<h3 id="半加器">半加器</h3>
+<p>半加器是对2个二进制数字相加得到结果，结果可能有进位。</p>
+<p>但是实际上一共也只有4种情况，我们不妨全部列出来看看：</p>
 <span id="more"></span>
-<h2 id="边沿触发器">边沿触发器</h2>
-<p>有时候电路的输出会出现空翻的现象，也就是CPU在计算的过程中，输出会有中间状态。这时候可以引入边沿触发器解决这个问题。</p>
-<p><img src="/images/0cc303b6-669d-4374-974b-23697d7af879.png" /></p>
-<p>上图中，当控制位为0的时候，前面的触发器接收输入，并保存，后面的触发器保持不变，整体输出不变；只有当控制位从0变成1的时候，后面的触发器接收前面触发器的输入并保存，这时前面触发器是保持不变的，整体处于稳定状态；当控制位处于1的时候，前面的触发器不接受输入，整体也处于稳定状态。所以只有当控制位从0变成1的时候才会导致整体输出的改变。我们把这个触发器叫做上升沿触发器。</p>
-<h2 id="参考">参考</h2>
-<p><a href="https://www.zhihu.com/question/21981280">CPU为什么需要时钟？</a></p>
-<p><a href="https://blog.csdn.net/weixin_44395686/article/details/105318472">为什么需要时钟脉冲</a></p>
+<p><img src="/images/fe1e84f8-9eb0-45eb-9e36-d3cb1c8ccb92.png" /></p>
+<p>不难发现<code>sum = a Xor b</code> ，<code>carry = a And b</code></p>
+<p>所以其实半加器很简单，用HDL可以这么描述：</p>
+<figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="code"><pre><span class="line">CHIP HalfAdder &#123;</span><br><span class="line">    IN a, b;    // 1-bit inputs</span><br><span class="line">    OUT sum,    // Right bit of a + b </span><br><span class="line">        carry;  // Left bit of a + b</span><br><span class="line"></span><br><span class="line">    PARTS:</span><br><span class="line">    Xor(a=a, b=b, out=sum);</span><br><span class="line">    And(a=a, b=b, out=carry);</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="全加器">全加器</h3>
+<p>全加器是带进位的加法，也就是三位数相加，一共有8种情况，我们也可以都列出来看看：</p>
+<p><img src="/images/1869b8b2-52d7-4ded-b443-a32f2ce74d59.png" /></p>
+<p>我们可以用2个半加器实现，但是仔细观察也可以发现，其实<code>sum = a Xor b Xor c</code> ，<code>carry = ( ( a Xor b ) And c ) Or ( a And b )</code> ，其实这里面有个小技巧，就是把所有是1的拿出来做Or操作，然后简化一下就得到了最终的表达式。</p>
+<p>我们用HDL可以这么描述全加器：</p>
+<figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="code"><pre><span class="line">CHIP FullAdder &#123;</span><br><span class="line">    IN a, b, c;  // 1-bit inputs</span><br><span class="line">    OUT sum,     // Right bit of a + b + c</span><br><span class="line">        carry;   // Left bit of a + b + c</span><br><span class="line"></span><br><span class="line">    PARTS:</span><br><span class="line">    Xor(a=a, b=b, out=out1);</span><br><span class="line">    Xor(a=out1, b=c, out=sum);</span><br><span class="line">    And(a=out1, b=c, out=out2);</span><br><span class="line">    And(a=a, b=b, out=out3);</span><br><span class="line">    Or(a=out2, b=out3, out=carry);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="算术逻辑单元alu">算术逻辑单元（ALU）</h2>
+<p>ALU的功能如下表所示：</p>
+<p><img src="/images/34a7f047-5417-41ff-8b26-e70814d49b57.png" /></p>
+<p>没啥特别的，用逻辑电路直接就可以实现了，实现逻辑都在代码里：</p>
+<figure class="highlight plaintext"><figcaption><span>Text</span></figcaption><table><tr><td class="code"><pre><span class="line">CHIP ALU &#123;</span><br><span class="line">    IN  </span><br><span class="line">        x[16], y[16],  // 16-bit inputs        </span><br><span class="line">        zx, // zero the x input?</span><br><span class="line">        nx, // negate the x input?</span><br><span class="line">        zy, // zero the y input?</span><br><span class="line">        ny, // negate the y input?</span><br><span class="line">        f,  // compute out = x + y (if 1) or x &amp; y (if 0)</span><br><span class="line">        no; // negate the out output?</span><br><span class="line"></span><br><span class="line">    OUT </span><br><span class="line">        out[16], // 16-bit output</span><br><span class="line">        zr, // 1 if (out == 0), 0 otherwise</span><br><span class="line">        ng; // 1 if (out &lt; 0),  0 otherwise</span><br><span class="line"></span><br><span class="line">    PARTS:</span><br><span class="line">    //zx, nx</span><br><span class="line">    Mux16(a=x, b=false, sel=zx, out=zxout);</span><br><span class="line">    Not16(in=zxout, out=notx);</span><br><span class="line">    Mux16(a=zxout, b=notx, sel=nx, out=nxout);</span><br><span class="line">    //zy, ny</span><br><span class="line">    Mux16(a=y, b=false, sel=zy, out=zyout);</span><br><span class="line">    Not16(in=zyout, out=noty);</span><br><span class="line">    Mux16(a=zyout, b=noty, sel=ny, out=nyout);</span><br><span class="line">    //f</span><br><span class="line">    Add16(a=nxout, b=nyout, out=xpy);</span><br><span class="line">    And16(a=nxout, b=nyout, out=xay);</span><br><span class="line">    Mux16(a=xay, b=xpy, sel=f, out=fout);</span><br><span class="line">    //no</span><br><span class="line">    Not16(in=fout, out=nfout);</span><br><span class="line">    Mux16(a=fout, b=nfout, sel=no, out[15]=ng, out[0]=out0, out[1]=out1, out[2]=out2, out[3]=out3, out[4]=out4, out[5]=out5, out[6]=out6, out[7]=out7, out[8]=out8, out[9]=out9, out[10]=out10, out[11]=out11, out[12]=out12, out[13]=out13, out[14]=out14, out[15]=out15, out=out);</span><br><span class="line">    //zr</span><br><span class="line">    Or(a=out0, b=out1, out=or1);</span><br><span class="line">    Or(a=or1, b=out2, out=or2);</span><br><span class="line">    Or(a=or2, b=out3, out=or3);</span><br><span class="line">    Or(a=or3, b=out4, out=or4);</span><br><span class="line">    Or(a=or4, b=out5, out=or5);</span><br><span class="line">    Or(a=or5, b=out6, out=or6);</span><br><span class="line">    Or(a=or6, b=out7, out=or7);</span><br><span class="line">    Or(a=or7, b=out8, out=or8);</span><br><span class="line">    Or(a=or8, b=out9, out=or9);</span><br><span class="line">    Or(a=or9, b=out10, out=or10);</span><br><span class="line">    Or(a=or10, b=out11, out=or11);</span><br><span class="line">    Or(a=or11, b=out12, out=or12);</span><br><span class="line">    Or(a=or12, b=out13, out=or13);</span><br><span class="line">    Or(a=or13, b=out14, out=or14);</span><br><span class="line">    Or(a=or14, b=out15, out=or15);</span><br><span class="line">    Not(in=or15, out=zr);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>Computer Science</category>
@@ -407,6 +383,30 @@ x &amp; &amp; (x\ge0) \\
 <h2 id="回顾">回顾</h2>
 <p>这一节我们实现了用电路去表示基础的门电路。迈出了关键的一步，但是一直用画图的方式去表达电路也比较麻烦，下一节我们会简单学习一门<strong>硬件描述语言</strong>（HDL：hardware description language）来表示电路的实现方式，一步一步去抽象，实现更多的组件。从而构造出一个完整的电脑。</p>
 <p>再聊一个题外话：抽象。抽象是软件工程师很重要的一个技能。在这里，我们用<code>或非门</code>构造出了<code>非门</code>，<code>与门</code>，<code>或门</code>，那么我们可以把构造的过程理解成一个抽象的过程，构造出的门电路可以直接供我们使用，而不必每次去画几个或非门，然后把他们连起来。当然目前的门电路比较简单，我们的感知不是很强烈，如果我们构造了一个由几十个或非门构造出的<code>某门</code>，那么抽象就显得尤为重要了。其实平时写代码也是如此，我们应该把公用的部分，抽象出一个模块或者一个工具类。</p>
+]]></content>
+      <categories>
+        <category>Computer Science</category>
+      </categories>
+      <tags>
+        <tag>Hex</tag>
+        <tag>Computer Science</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>从零构造一台计算机——时序逻辑</title>
+    <url>/2022/01/12/%E4%BB%8E%E9%9B%B6%E6%9E%84%E9%80%A0%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA%E2%80%94%E2%80%94%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91/</url>
+    <content><![CDATA[<h2 id="时钟">时钟</h2>
+<p>这里的时钟通常是指时钟脉冲。如果没有时钟脉冲，CPU就是静态的，可以简单理解为给定输入，给出输出，没有什么动力可以驱动CPU做下一步的事情，我们需要手动改变输入，这时候的CPU就像是一个计算器，或者算盘一样。</p>
+<p>时钟脉冲是CPU的心脏，给了CPU动力去取下一条指令并执行。</p>
+<p>时钟脉冲的逻辑其实就是振荡器，这里不再赘述，可以看《穿越计算机的迷雾》</p>
+<span id="more"></span>
+<h2 id="边沿触发器">边沿触发器</h2>
+<p>有时候电路的输出会出现空翻的现象，也就是CPU在计算的过程中，输出会有中间状态。这时候可以引入边沿触发器解决这个问题。</p>
+<p><img src="/images/0cc303b6-669d-4374-974b-23697d7af879.png" /></p>
+<p>上图中，当控制位为0的时候，前面的触发器接收输入，并保存，后面的触发器保持不变，整体输出不变；只有当控制位从0变成1的时候，后面的触发器接收前面触发器的输入并保存，这时前面触发器是保持不变的，整体处于稳定状态；当控制位处于1的时候，前面的触发器不接受输入，整体也处于稳定状态。所以只有当控制位从0变成1的时候才会导致整体输出的改变。我们把这个触发器叫做上升沿触发器。</p>
+<h2 id="参考">参考</h2>
+<p><a href="https://www.zhihu.com/question/21981280">CPU为什么需要时钟？</a></p>
+<p><a href="https://blog.csdn.net/weixin_44395686/article/details/105318472">为什么需要时钟脉冲</a></p>
 ]]></content>
       <categories>
         <category>Computer Science</category>
