@@ -1,0 +1,16 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>编程语言 - 分类 - 小虞的博客</title>
+        <link>https://www.kaiux.cn/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/</link>
+        <description>编程语言 - 分类 - 小虞的博客</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>kaiux@foxmail.com (小虞)</managingEditor>
+            <webMaster>kaiux@foxmail.com (小虞)</webMaster><copyright>小虞</copyright><lastBuildDate>Wed, 19 Jun 2019 09:09:07 &#43;0000</lastBuildDate><atom:link href="https://www.kaiux.cn/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" rel="self" type="application/rss+xml" /><item>
+    <title>如何使用Scala的ClassTag</title>
+    <link>https://www.kaiux.cn/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8scala%E7%9A%84classtag/</link>
+    <pubDate>Wed, 19 Jun 2019 09:09:07 &#43;0000</pubDate>
+    <author>小虞</author>
+    <guid>https://www.kaiux.cn/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8scala%E7%9A%84classtag/</guid>
+    <description><![CDATA[Scala官方文档中对于ClassTag的定义如下： ClassTag[T]保存着在运行时被JVM擦除的类型T的信息。当我们在运行时想获得被实]]></description>
+</item>
+</channel>
+</rss>
