@@ -10,7 +10,11 @@
     <pubDate>Wed, 19 Jun 2019 09:09:07 &#43;0000</pubDate>
     <author>小虞</author>
     <guid>https://www.kaiux.cn/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8scala%E7%9A%84classtag/</guid>
-    <description><![CDATA[Scala官方文档中对于ClassTag的定义如下： ClassTag[T]保存着在运行时被JVM擦除的类型T的信息。当我们在运行时想获得被实]]></description>
+    <description><![CDATA[<p>Scala官方文档中对于<code>ClassTag</code>的定义如下：</p>
+<blockquote>
+<p><code>ClassTag[T]</code>保存着在运行时被JVM擦除的类型<code>T</code>的信息。当我们在运行时想获得被实例化的<code>Array</code>的类型信息的时候，这个特性会比较有用。</p>
+</blockquote>
+<p>下面请看一个具体的场景：</p>]]></description>
 </item>
 </channel>
 </rss>
