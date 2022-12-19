@@ -1,0 +1,22 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>小虞的博客</title>
+        <link>https://www.kaiux.cn/</link>
+        <description>小虞的博客网站</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>kaiux@foxmail.com (小虞)</managingEditor>
+            <webMaster>kaiux@foxmail.com (小虞)</webMaster><copyright>小虞</copyright><lastBuildDate>Wed, 19 Jun 2019 09:09:07 &#43;0000</lastBuildDate>
+            <atom:link href="https://www.kaiux.cn/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+    <title>如何使用Scala的ClassTag</title>
+    <link>https://www.kaiux.cn/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8scala%E7%9A%84classtag/</link>
+    <pubDate>Wed, 19 Jun 2019 09:09:07 &#43;0000</pubDate>
+    <author>小虞</author>
+    <guid>https://www.kaiux.cn/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8scala%E7%9A%84classtag/</guid>
+    <description><![CDATA[<p>Scala官方文档中对于<code>ClassTag</code>的定义如下：</p>
+<blockquote>
+<p><code>ClassTag[T]</code>保存着在运行时被JVM擦除的类型<code>T</code>的信息。当我们在运行时想获得被实例化的<code>Array</code>的类型信息的时候，这个特性会比较有用。</p>
+</blockquote>
+<p>下面请看一个具体的场景：</p>]]></description>
+</item>
+</channel>
+</rss>

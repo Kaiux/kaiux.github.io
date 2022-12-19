@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>如何使用Scala的ClassTag - 小虞的博客</title><meta name="Description" content="小虞的博客网站"><meta property="og:title" content="如何使用Scala的ClassTag" />
+<meta property="og:description" content="Scala官方文档中对于ClassTag的定义如下：
+
+ClassTag[T]保存着在运行时被JVM擦除的类型T的信息。当我们在运行时想获得被实例化的Array的类型信息的时候，这个特性会比较有用。
+
+下面请看一个具体的场景：" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.kaiux.cn/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8scala%E7%9A%84classtag/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-06-19T09:09:07+00:00" />
+<meta property="article:modified_time" content="2019-06-19T09:09:07+00:00" /><meta property="og:site_name" content="小虞的博客" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="如何使用Scala的ClassTag"/>
+<meta name="twitter:description" content="Scala官方文档中对于ClassTag的定义如下：
+
+ClassTag[T]保存着在运行时被JVM擦除的类型T的信息。当我们在运行时想获得被实例化的Array的类型信息的时候，这个特性会比较有用。
+
+下面请看一个具体的场景："/>
+<meta name="application-name" content="My cool site">
+<meta name="apple-mobile-web-app-title" content="My cool site"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/images/avatar.svg"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://www.kaiux.cn/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8scala%E7%9A%84classtag/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "如何使用Scala的ClassTag",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/www.kaiux.cn\/posts\/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8scala%E7%9A%84classtag\/"
+        },"genre": "posts","keywords": "Scala, ClassTag","wordcount":  3827 ,
+        "url": "https:\/\/www.kaiux.cn\/posts\/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8scala%E7%9A%84classtag\/","datePublished": "2019-06-19T09:09:07+00:00","dateModified": "2019-06-19T09:09:07+00:00","license": "小虞","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "小虞"
+            },"description": ""
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="小虞的博客">小虞的博客</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="输入关键词" id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="小虞的博客">小虞的博客</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="输入关键词" id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><div class="search-dropdown desktop">
+        <div id="search-dropdown-desktop"></div>
+    </div>
+    <div class="search-dropdown mobile">
+        <div id="search-dropdown-mobile"></div>
+    </div><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">如何使用Scala的ClassTag</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/about_me" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>小虞</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>编程语言</a>&nbsp;<a href="/categories/scala/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Scala</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2019-06-19">2019-06-19</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3827 字&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 8 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#场景">场景</a></li>
+    <li><a href="#解决方案一">解决方案一</a></li>
+    <li><a href="#解决方案二">解决方案二</a></li>
+    <li><a href="#解决方案三">解决方案三</a></li>
+    <li><a href="#最终的方案">最终的方案</a></li>
+    <li><a href="#结论">结论</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>Scala官方文档中对于<code>ClassTag</code>的定义如下：</p>
+<blockquote>
+<p><code>ClassTag[T]</code>保存着在运行时被JVM擦除的类型<code>T</code>的信息。当我们在运行时想获得被实例化的<code>Array</code>的类型信息的时候，这个特性会比较有用。</p>
+</blockquote>
+<p>下面请看一个具体的场景：</p>
+<h2 id="场景">场景</h2>
+<p>假定有一个<code>Map[String, Any]</code>，给定一个指定的key，我们需要检查Map中是否存在该key对应的value，如果存在，则优雅地返回这个值。看起来很简单，下面让我们来实现它，并且逐渐理解<code>ClassTag</code>。</p>
+<h2 id="解决方案一">解决方案一</h2>
+<p>我们的第一次尝试如下所示：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="nc">Animal</span>
+</span></span><span class="line"><span class="cl">    <span class="k">val</span> <span class="n">myMap</span><span class="k">:</span> <span class="kt">collection.Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span><span class="s">&#34;Number&#34;</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="o">,</span> <span class="s">&#34;Greeting&#34;</span> <span class="o">-&gt;</span> <span class="s">&#34;Hello World&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s">&#34;Animal&#34;</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">Animal</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="cm">/* 下面注释的代码将会不通过编译
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * Any不能被当时Int使用
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//val number:Int = myMap(&#34;Number&#34;)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">//println(&#34;number is &#34; + number)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">//使用类型转换，可以通过编译
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">val</span> <span class="n">number</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="n">myMap</span><span class="o">(</span><span class="s">&#34;Number&#34;</span><span class="o">).</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">println</span><span class="o">(</span><span class="s">&#34;number  is &#34;</span> <span class="o">+</span> <span class="n">number</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//下面的代码将会抛出ClassCastException
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">val</span> <span class="n">greeting</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">myMap</span><span class="o">(</span><span class="s">&#34;Number&#34;</span><span class="o">).</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span></code></pre></div><p>运行结果如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="n">number</span>  <span class="n">is</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl"><span class="nc">Exception</span> <span class="n">in</span> <span class="n">thread</span> <span class="s">&#34;main&#34;</span> <span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="nc">ClassCastException</span><span class="k">:</span> <span class="kt">java.lang.Integer</span> <span class="kt">cannot</span> <span class="kt">be</span> <span class="kt">cast</span> <span class="kt">to</span> <span class="kt">java.lang.String</span>
+</span></span><span class="line"><span class="cl">	<span class="n">at</span> <span class="n">learnscala</span><span class="o">.</span><span class="nc">Test</span><span class="n">$</span><span class="o">.</span><span class="n">main</span><span class="o">(</span><span class="nc">Test</span><span class="o">.</span><span class="n">scala</span><span class="k">:</span><span class="err">25</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">	<span class="n">at</span> <span class="n">learnscala</span><span class="o">.</span><span class="nc">Test</span><span class="o">.</span><span class="n">main</span><span class="o">(</span><span class="nc">Test</span><span class="o">.</span><span class="n">scala</span><span class="o">)</span>
+</span></span></code></pre></div><p>上面的代码有几个很显然的问题：</p>
+<p>首先，当我们把Any直接当成Int来使用的时候，编译器是不会通过的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="c1">// 这将不会通过编译
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">val</span> <span class="n">number</span><span class="k">:</span><span class="kt">Int</span> <span class="o">=</span> <span class="n">myMap</span><span class="o">(</span><span class="s">&#34;Number&#34;</span><span class="o">)</span>
+</span></span></code></pre></div><p>编译器看起来没有什么错误，但是问题在于，我们没有办法使用Map中值的具体类型。换句话说，如果我们只是把值的类型设置成Any我们没办法受益于Scala提供的类型系统，所以我们需要修改代码。</p>
+<p>为了通过编译，我们使用了如下的类型转换把获取的值变成了Int类型：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">val</span> <span class="n">number</span><span class="k">:</span><span class="kt">Int</span> <span class="o">=</span> <span class="n">myMap</span><span class="o">(</span><span class="s">&#34;Number&#34;</span><span class="o">).</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span>
+</span></span></code></pre></div><p>这种做法虽然能有效果，但是当我们尝试转换一个不相关的类型的时候，<code>asInstanceOf</code>会抛出一个<code>ClassCastException</code>异常。</p>
+<p>所以下面这行代码，会在运行时抛出异常，因为我们试图转换一个Int值为String。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">val</span> <span class="n">greeting</span><span class="k">:</span><span class="kt">String</span> <span class="o">=</span> <span class="n">myMap</span><span class="o">(</span><span class="s">&#34;Number&#34;</span><span class="o">).</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+</span></span></code></pre></div><p>我们又引入了一个新的问题。</p>
+<p>就算我们使用Map的<code>get()</code>方法，编译器还是不会通过，因为<code>Option[Any]</code>也没有办法当成<code>Option[Int]</code>来使用：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="c1">//下面的代码将不会通过编译
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">val</span> <span class="n">number</span><span class="k">:</span><span class="kt">Option</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="n">myMap</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&#34;Number&#34;</span><span class="o">)</span>
+</span></span></code></pre></div><p>你可能会想什么谁的代码里面会使用<code>Map[String, Any]</code>，这显然不是一个好的设计。但是我们先忽略这一点，并假设这个结构确实存在，下面我们回到这个问题。</p>
+<p>使用<code>asInstanceOf</code>显然也不是一个好的方案，处理<code>ClassCastException</code>的办法之一是使用<code>try/catch</code>，但是这个方案并不是一个可靠并且优雅的方案，所以我们并不会采用。</p>
+<h2 id="解决方案二">解决方案二</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Animal</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">override</span> <span class="k">def</span> <span class="n">toString</span> <span class="k">=</span> <span class="s">&#34;I am Animal&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// getValueFromMap for the Int, String and Animal
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">def</span> <span class="n">getValueFromMapForInt</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">dataMap</span><span class="k">:</span> <span class="kt">collection.Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">])</span><span class="k">:</span><span class="kt">Option</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span>
+</span></span><span class="line"><span class="cl">  <span class="n">dataMap</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="n">getValueFromMapForString</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">dataMap</span><span class="k">:</span> <span class="kt">collection.Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">]</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span>
+</span></span><span class="line"><span class="cl">  <span class="n">dataMap</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="n">getValueFromMapForAnimal</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">dataMap</span><span class="k">:</span> <span class="kt">collection.Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">]</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Animal</span><span class="o">]</span> <span class="k">=</span>
+</span></span><span class="line"><span class="cl">  <span class="n">dataMap</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="k">:</span> <span class="kt">Animal</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">val</span> <span class="n">myMap</span><span class="k">:</span> <span class="kt">collection.Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span><span class="s">&#34;Number&#34;</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="o">,</span> <span class="s">&#34;Greeting&#34;</span> <span class="o">-&gt;</span> <span class="s">&#34;Hello World&#34;</span><span class="o">,</span> <span class="s">&#34;Animal&#34;</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">Animal</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns Some(1)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">number1</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMapForInt</span><span class="o">(</span><span class="s">&#34;Number&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;number is &#34;</span> <span class="o">+</span> <span class="n">number1</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns None
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">numberNotExists</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMapForInt</span><span class="o">(</span><span class="s">&#34;Number2&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;number is &#34;</span> <span class="o">+</span> <span class="n">numberNotExists</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns Some(Hello World)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">greeting</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMapForString</span><span class="o">(</span><span class="s">&#34;Greeting&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;greeting is &#34;</span> <span class="o">+</span> <span class="n">greeting</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns None
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">greetingDoesNotExists</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMapForString</span><span class="o">(</span><span class="s">&#34;Greeting1&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;greeting is &#34;</span> <span class="o">+</span> <span class="n">greetingDoesNotExists</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns Some[Animal]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">animal</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Animal</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMapForAnimal</span><span class="o">(</span><span class="s">&#34;Animal&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;Animal is &#34;</span> <span class="o">+</span> <span class="n">animal</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns None
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">animalDoesNotExist</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Animal</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMapForAnimal</span><span class="o">(</span><span class="s">&#34;Animal1&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;Animal is &#34;</span> <span class="o">+</span> <span class="n">animalDoesNotExist</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>运行结果如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="n">number</span> <span class="n">is</span> <span class="nc">Some</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">number</span> <span class="n">is</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">greeting</span> <span class="n">is</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">greeting</span> <span class="n">is</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nc">Animal</span> <span class="n">is</span> <span class="nc">Some</span><span class="o">(</span><span class="n">I</span> <span class="n">am</span> <span class="nc">Animal</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nc">Animal</span> <span class="n">is</span> <span class="nc">None</span>
+</span></span></code></pre></div><p>现在我们使用<code>getValueFromMapForXXX</code>方法来获取Map中<code>XXX</code>类型的值，从而避免了<code>ClassCastException</code>。</p>
+<p>虽然解决了之前的问题，但是现在的这个解决方案任然不够好，因为，当我们增加一个新的类型的时候，就要提供一个新的<code>getValueFromMapForXXX</code>方法。</p>
+<h2 id="解决方案三">解决方案三</h2>
+<p>我们尝试使用类型参数来解决之前方案中<code>getValueFromMapForXXX</code>方法的可扩展性不足的问题。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">def</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">T</span><span class="o">](</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">dataMap</span><span class="k">:</span> <span class="kt">collection.Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">])</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span> <span class="k">=</span>
+</span></span><span class="line"><span class="cl">  <span class="n">dataMap</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="k">:</span> <span class="kt">T</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span></code></pre></div><p>现在我们只有一个<code>getValueFromMap[T]</code>的方法，它的参数和之前的版本一样，但是现在需要传入一个类型参数<code>T</code>。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">def</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">T</span><span class="o">](</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">dataMap</span><span class="k">:</span> <span class="kt">collection.Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">])</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span> <span class="k">=</span>
+</span></span><span class="line"><span class="cl">  <span class="n">dataMap</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="k">:</span> <span class="kt">T</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">class</span> <span class="nc">Animal</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">override</span> <span class="k">def</span> <span class="n">toString</span> <span class="k">=</span> <span class="s">&#34;I am Animal&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">val</span> <span class="n">myMap</span><span class="k">:</span> <span class="kt">collection.Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span><span class="s">&#34;Number&#34;</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="o">,</span> <span class="s">&#34;Greeting&#34;</span> <span class="o">-&gt;</span> <span class="s">&#34;Hello World&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;Animal&#34;</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">Animal</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns Some(1)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">number1</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="s">&#34;Number&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;number is &#34;</span> <span class="o">+</span> <span class="n">number1</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns None
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">numberNotExists</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="s">&#34;Number2&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;number is &#34;</span> <span class="o">+</span> <span class="n">numberNotExists</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns Some(Hello World)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">greeting</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">String</span><span class="o">](</span><span class="s">&#34;Greeting&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;greeting is &#34;</span> <span class="o">+</span> <span class="n">greeting</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns None
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">greetingDoesNotExists</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">String</span><span class="o">](</span><span class="s">&#34;Greeting1&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;greeting is &#34;</span> <span class="o">+</span> <span class="n">greetingDoesNotExists</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns Some[Animal]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">animal</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Animal</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">Animal</span><span class="o">](</span><span class="s">&#34;Animal&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;Animal is &#34;</span> <span class="o">+</span> <span class="n">animal</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns None
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">animalDoesNotExist</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Animal</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">Animal</span><span class="o">](</span><span class="s">&#34;Animal1&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;Animal is &#34;</span> <span class="o">+</span> <span class="n">animalDoesNotExist</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 注意，这里开始出现问题了
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// 现在编译器不会报错，因为所有的都发生在运行时
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// 即使getValueFromMap 返回的是 Option[String]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">greetingInt</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="s">&#34;Greeting&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 输出 Some(Hello World)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">println</span><span class="o">(</span><span class="s">&#34;greetingInt is &#34;</span> <span class="o">+</span> <span class="n">greetingInt</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 这里会抛出 ClassCastException
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">somevalue</span> <span class="k">=</span> <span class="n">greetingInt</span><span class="o">.</span><span class="n">map</span><span class="o">((</span><span class="n">x</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">5</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 下面的不会打印
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">println</span><span class="o">(</span><span class="n">somevalue</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>运行结果如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="n">number</span> <span class="n">is</span> <span class="nc">Some</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">number</span> <span class="n">is</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">greeting</span> <span class="n">is</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">greeting</span> <span class="n">is</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nc">Animal</span> <span class="n">is</span> <span class="nc">Some</span><span class="o">(</span><span class="n">I</span> <span class="n">am</span> <span class="nc">Animal</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nc">Animal</span> <span class="n">is</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">greetingInt</span> <span class="n">is</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nc">Exception</span> <span class="n">in</span> <span class="n">thread</span> <span class="s">&#34;main&#34;</span> <span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="nc">ClassCastException</span><span class="k">:</span> <span class="kt">java.lang.String</span> <span class="kt">cannot</span> <span class="kt">be</span> <span class="kt">cast</span> <span class="kt">to</span> <span class="kt">java.lang.Integer</span>
+</span></span><span class="line"><span class="cl">	<span class="n">at</span> <span class="n">scala</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="nc">BoxesRunTime</span><span class="o">.</span><span class="n">unboxToInt</span><span class="o">(</span><span class="nc">BoxesRunTime</span><span class="o">.</span><span class="n">java</span><span class="k">:</span><span class="err">103</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">	<span class="n">at</span> <span class="n">scala</span><span class="o">.</span><span class="n">runtime</span><span class="o">.</span><span class="n">java8</span><span class="o">.</span><span class="nc">JFunction1$mcII$sp</span><span class="o">.</span><span class="n">apply</span><span class="o">(</span><span class="nc">JFunction1$mcII$sp</span><span class="o">.</span><span class="n">java</span><span class="k">:</span><span class="err">23</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">	<span class="n">at</span> <span class="n">scala</span><span class="o">.</span><span class="nc">Option</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="nc">Option</span><span class="o">.</span><span class="n">scala</span><span class="k">:</span><span class="err">163</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">	<span class="n">at</span> <span class="n">learnscala</span><span class="o">.</span><span class="nc">Test</span><span class="n">$</span><span class="o">.</span><span class="n">main</span><span class="o">(</span><span class="nc">Test</span><span class="o">.</span><span class="n">scala</span><span class="k">:</span><span class="err">63</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">	<span class="n">at</span> <span class="n">learnscala</span><span class="o">.</span><span class="nc">Test</span><span class="o">.</span><span class="n">main</span><span class="o">(</span><span class="nc">Test</span><span class="o">.</span><span class="n">scala</span><span class="o">)</span>
+</span></span></code></pre></div><p>现在，我们所需要做的就是调用<code>getValueFromMap[T]</code>方法，并且传递我们期待的类型和key，这样Map就可以返回我们需要的value。假如我们需要获取一个key为<code>Number</code>的Int类型的值，我们只需要这样做就可以了：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">val</span> <span class="n">number1</span><span class="k">:</span><span class="kt">Option</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="s">&#34;Number&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span></code></pre></div><p>到现在为止，我们看起来有了一个可靠的解决方案，因为我们只有一个<code>getValeFromMap</code>方法，并且我们也没有编译错误或者因为调用<code>asInstanceOf</code>不当而抛出的运行时<code>ClassCastException</code>异常。</p>
+<p>在解决方案三中，我们解决了如下的几个问题：</p>
+<ol>
+<li>用户需要更加了解他正在处理的类型，以减少不必要的运行时异常。</li>
+<li>不需要<code>asInstanceOf</code>方法，如果key找到了，那么我们返回对应的<code>Some[value]</code>，否则，返回<code>None</code>。</li>
+<li>可扩展性更好。</li>
+</ol>
+<p>到现在为止看起来还好，但是就像上面代码中所展示的，当用户不小心使用了错误的类型时，还是会有错误发生。</p>
+<p>下面的代码虽然可以正常工作，但是并不符合逻辑：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="c1">//尝试转换 Option[String] 为 Option[Int]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">val</span> <span class="n">greetingInt</span><span class="k">:</span><span class="kt">Option</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="s">&#34;Greeting&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span></code></pre></div><p>Map中key为<code>Greeting</code>的value值为String类型，但是我们把它赋值给<code>Option[Int]</code>。惊人的是，下面的代码可以正常工作：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="c1">// prints Some(Hello World)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">println</span><span class="o">(</span><span class="s">&#34;greetingInt is &#34;</span> <span class="o">+</span> <span class="n">greetingInt</span><span class="o">)</span>
+</span></span></code></pre></div><p>但是当我们做一个Int操作的时候，会抛出异常。</p>
+<p>如下所示的代码，会抛出<code>ClassCaseException</code>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="c1">// 这行代码会抛出 ClassCastException 异常
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">val</span> <span class="n">somevalue</span> <span class="k">=</span> <span class="n">greetingInt</span><span class="o">.</span><span class="n">map</span><span class="o">((</span><span class="n">x</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">5</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// 下面这行代码不会被打印
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">println</span><span class="o">(</span><span class="n">somevalue</span><span class="o">)</span>
+</span></span></code></pre></div><p>是不是<code>getValueFromMap[T]</code>需要捕获这个异常呢，我们的方法有问题吗？让我们继续看一下这个方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">def</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">T</span><span class="o">](</span><span class="n">key</span><span class="k">:</span><span class="kt">String</span><span class="o">,</span> <span class="n">dataMap</span><span class="k">:</span> <span class="kt">collection.Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">])</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span> <span class="k">=</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dataMap</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="k">:</span><span class="kt">T</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>方法看起来是好的，我们所做的就是调用<code>get(key)</code>方法，并且检查value是不是T类型的，如果是，并且存在这个value，那么返回<code>Some(value: T)</code>,否则返回<code>None</code>。</p>
+<p>所以，在上面的例子中，key为<code>Greeting</code>的value类型为<code>Int</code>,它应该检查<code>Some(value: Int)</code>是否是符合，显然，它应该返回<code>None</code>,因为key为<code>Greeting</code>的value的值为：<code>Hello World</code>，这是一个String而不是Int。但是我们使用了一个Int去接收。</p>
+<p>问题在于，为什么下面这行代码没有捕捉到异常：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">case</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="k">:</span><span class="kt">T</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="o">)</span>
+</span></span></code></pre></div><p>运行时只会检查key有没有对应的value，而不会检查value是否是我们传递的<code>T</code>类型。因为运行时不包含我们传递的任何类型信息，在运行时，<code>T</code>已经被擦除不存在了。在JVM中被称为类型擦除。</p>
+<p>所以我们最好可以保证，我们传递的类型<code>T</code>在运行时可以存在，去帮助运行时实现一些逻辑。下面我们引入<code>ClassTag</code>。</p>
+<p>我们需要做的就是传递一个隐式的<code>ClassTag[T]</code>参数，如果我们需要获取Map中Int类型的value时，我们需要传递一个隐式的<code>ClassTag[Int]</code>参数。然后，当我们调用这个方法的时候，我们可以不传递隐式参数（参考Scala隐式转换），编译器会自动为我们提供。</p>
+<p>所以现在的<code>getValuleFromMap</code>看起来是下面这样的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">def</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">T</span><span class="o">](</span><span class="n">key</span><span class="k">:</span><span class="kt">String</span><span class="o">,</span> <span class="n">dataMap</span><span class="k">:</span> <span class="kt">collection.Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">])(</span><span class="k">implicit</span> <span class="n">t</span><span class="k">:</span><span class="kt">ClassTag</span><span class="o">[</span><span class="kt">T</span><span class="o">])</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dataMap</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="k">:</span> <span class="kt">T</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span></code></pre></div><p>上面的方法也可以写成这样，效果是以一样的，但是看起来优雅一些：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">def</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">T</span> <span class="kt">:</span> <span class="kt">ClassTag</span><span class="o">](</span><span class="n">key</span><span class="k">:</span><span class="kt">String</span><span class="o">,</span> <span class="n">dataMap</span><span class="k">:</span> <span class="kt">collection.Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">])</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">dataMap</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="k">:</span> <span class="kt">T</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span></code></pre></div><p>方法调用不需要做任何改变，因为编译器会为我们提供隐式的<code>ClassTag[T]</code>参数。</p>
+<h2 id="最终的方案">最终的方案</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="c1">// getValueFromMap
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">def</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">T:</span> <span class="kt">ClassTag</span><span class="o">](</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">dataMap</span><span class="k">:</span> <span class="kt">collection.Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">])</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">dataMap</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="k">:</span> <span class="kt">T</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Some</span><span class="o">(</span><span class="n">value</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">class</span> <span class="nc">Animal</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">override</span> <span class="k">def</span> <span class="n">toString</span> <span class="k">=</span> <span class="s">&#34;I am Animal&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="k">val</span> <span class="n">myMap</span><span class="k">:</span> <span class="kt">collection.Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span><span class="s">&#34;Number&#34;</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="o">,</span> <span class="s">&#34;Greeting&#34;</span> <span class="o">-&gt;</span> <span class="s">&#34;Hello World&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;Animal&#34;</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">Animal</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns Some(1)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">number1</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="s">&#34;Number&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;number is &#34;</span> <span class="o">+</span> <span class="n">number1</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns None
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">numberNotExists</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="s">&#34;Number2&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;number is &#34;</span> <span class="o">+</span> <span class="n">numberNotExists</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns Some(Hello World)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">greeting</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">String</span><span class="o">](</span><span class="s">&#34;Greeting&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;greeting is &#34;</span> <span class="o">+</span> <span class="n">greeting</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns None
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">greetingDoesNotExists</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">String</span><span class="o">](</span><span class="s">&#34;Greeting1&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;greeting is &#34;</span> <span class="o">+</span> <span class="n">greetingDoesNotExists</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">()</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns Some[Animal]
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">animal</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Animal</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">Animal</span><span class="o">](</span><span class="s">&#34;Animal&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;Animal is &#34;</span> <span class="o">+</span> <span class="n">animal</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// returns None
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">animalDoesNotExist</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Animal</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">Animal</span><span class="o">](</span><span class="s">&#34;Animal1&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;Animal is &#34;</span> <span class="o">+</span> <span class="n">animalDoesNotExist</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 现在这行代码没有问题，我们会得到None
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">greetingInt</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="s">&#34;Greeting&#34;</span><span class="o">,</span> <span class="n">myMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// prints None
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">println</span><span class="o">(</span><span class="s">&#34;greetingInt is &#34;</span> <span class="o">+</span> <span class="n">greetingInt</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 没有 ClassCastException 并且返回 None
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">somevalue</span> <span class="k">=</span> <span class="n">greetingInt</span><span class="o">.</span><span class="n">map</span><span class="o">((</span><span class="n">x</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">5</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// print None
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">println</span><span class="o">(</span><span class="n">somevalue</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// other map with list
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">someMap</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">(</span><span class="s">&#34;Number&#34;</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="o">,</span> <span class="s">&#34;Greeting&#34;</span> <span class="o">-&gt;</span> <span class="s">&#34;Hello World&#34;</span><span class="o">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s">&#34;Animal&#34;</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="nc">Animal</span><span class="o">,</span> <span class="s">&#34;goodList&#34;</span> <span class="o">-&gt;</span> <span class="nc">List</span><span class="o">(</span><span class="s">&#34;good&#34;</span><span class="o">,</span> <span class="s">&#34;better&#34;</span><span class="o">,</span> <span class="s">&#34;best&#34;</span><span class="o">))</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// gets the list from map
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">goodList</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]](</span><span class="s">&#34;goodList&#34;</span><span class="o">,</span> <span class="n">someMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// prints the list
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">println</span><span class="o">(</span><span class="n">goodList</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span>
+</span></span><span class="line"><span class="cl">  <span class="n">println</span><span class="o">(</span><span class="s">&#34;Now let us try to get bad list&#34;</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// tries to get bad list from the map
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">val</span> <span class="n">badListNotExists</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]](</span><span class="s">&#34;badList&#34;</span><span class="o">,</span> <span class="n">someMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// prints None
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="n">println</span><span class="o">(</span><span class="n">badListNotExists</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><p>代码的输出如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="n">number</span> <span class="n">is</span> <span class="nc">Some</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">number</span> <span class="n">is</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">greeting</span> <span class="n">is</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">Hello</span> <span class="nc">World</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">greeting</span> <span class="n">is</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nc">Animal</span> <span class="n">is</span> <span class="nc">Some</span><span class="o">(</span><span class="n">I</span> <span class="n">am</span> <span class="nc">Animal</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="nc">Animal</span> <span class="n">is</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">greetingInt</span> <span class="n">is</span> <span class="nc">None</span>
+</span></span><span class="line"><span class="cl"><span class="nc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nc">Some</span><span class="o">(</span><span class="nc">List</span><span class="o">(</span><span class="n">good</span><span class="o">,</span> <span class="n">better</span><span class="o">,</span> <span class="n">best</span><span class="o">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nc">Now</span> <span class="n">let</span> <span class="n">us</span> <span class="k">try</span> <span class="n">to</span> <span class="n">get</span> <span class="n">bad</span> <span class="n">list</span>
+</span></span><span class="line"><span class="cl"><span class="nc">None</span>
+</span></span></code></pre></div><p>现在，所有的问题都解决了，感谢Scala提供的<code>ClassTag</code>，帮我们在运行时获得我们传递的类型参数的信息。</p>
+<h2 id="结论">结论</h2>
+<p><code>ClassTag</code>对于我们在运行时获得类型参数<code>T</code>的信息是至关重要的，在多数情况下，它会提供许多便利。然而，它也有一些局限性，我们只能从<code>ClassTag</code>获取更高类型的信息，而不是参数类型更高的信息，这听起来有点绕，让我们看下面的例子。</p>
+<p>如果我们使用下面的代码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">val</span> <span class="n">goodList</span><span class="k">:</span><span class="kt">Option</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">]]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">]](</span><span class="s">&#34;goodList&#34;</span><span class="o">,</span> <span class="n">someMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// prints the list
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">println</span><span class="o">(</span><span class="n">goodList</span><span class="o">)</span>
+</span></span></code></pre></div><p>替换：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">val</span> <span class="n">goodList</span><span class="k">:</span><span class="kt">Option</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]](</span><span class="s">&#34;goodList&#34;</span><span class="o">,</span> <span class="n">someMap</span><span class="o">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// prints the list
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">println</span><span class="o">(</span><span class="n">goodList</span><span class="o">)</span>
+</span></span></code></pre></div><p>它仍然能正常工作，因为<code>ClassTag</code>仅仅在运行时提供更高的类型信息（List）不是参数类型的信息（Int、String）。这就是即使我们使用<code>getValueFromMap[List[Int]]</code>去接受key为<code>goodList</code>的value还能正常工作的原因。但是在有些情况下，我们需要在运行时获得参数的类型信息，这时候我们就需要使用<code>TypeTag</code>。</p>
+<h2 id="参考">参考</h2>
+<p><a href="https://dzone.com/articles/scala-classtag-a-simple-use-case" title="https://dzone.com/articles/scala-classtag-a-simple-use-case" target="_blank" rel="noopener noreffer ">How to Use the Scala ClassTag</a></p></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2019-06-19</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/scala/">Scala</a>,&nbsp;<a href="/tags/classtag/">ClassTag</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2022</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about_me" target="_blank">小虞</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
