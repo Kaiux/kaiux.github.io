@@ -15,8 +15,7 @@
     <description><![CDATA[<p>Scala官方文档中对于<code>ClassTag</code>的定义如下：</p>
 <blockquote>
 <p><code>ClassTag[T]</code>保存着在运行时被JVM擦除的类型<code>T</code>的信息。当我们在运行时想获得被实例化的<code>Array</code>的类型信息的时候，这个特性会比较有用。</p>
-</blockquote>
-<p>下面请看一个具体的场景：</p>]]></description>
+</blockquote>]]></description>
 </item>
 </channel>
 </rss>
