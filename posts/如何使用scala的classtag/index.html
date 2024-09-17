@@ -1,136 +1,202 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <title>如何使用Scala的ClassTag - 小虞的博客</title><meta name="Description" content="小虞的博客网站"><meta property="og:title" content="如何使用Scala的ClassTag" />
-<meta property="og:description" content="Scala官方文档中对于ClassTag的定义如下：
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Scala官方文档中对于ClassTag的定义如下：
 
 ClassTag[T]保存着在运行时被JVM擦除的类型T的信息。当我们在运行时想获得被实例化的Array的类型信息的时候，这个特性会比较有用。
-" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://www.kaiux.cn/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8scala%E7%9A%84classtag/" /><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2019-06-19T09:09:07+00:00" />
-<meta property="article:modified_time" content="2019-06-19T09:09:07+00:00" /><meta property="og:site_name" content="小虞的博客" />
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="如何使用Scala的ClassTag"/>
-<meta name="twitter:description" content="Scala官方文档中对于ClassTag的定义如下：
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="https://www.kaiux.cn/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Scala%E7%9A%84ClassTag/">
+  <meta property="og:site_name" content="小虞的博客">
+  <meta property="og:title" content="如何使用Scala的ClassTag">
+  <meta property="og:description" content="Scala官方文档中对于ClassTag的定义如下：
+ClassTag[T]保存着在运行时被JVM擦除的类型T的信息。当我们在运行时想获得被实例化的Array的类型信息的时候，这个特性会比较有用。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2019-06-19T09:09:07+00:00">
+    <meta property="article:modified_time" content="2019-06-19T09:09:07+00:00">
+<title>如何使用Scala的ClassTag | 小虞的博客</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" >
+<link rel="canonical" href="https://www.kaiux.cn/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Scala%E7%9A%84ClassTag/">
+<link rel="stylesheet" href="/book.min.4964903a822a7acb10dac6d1ab524833c97fb5f99b141976bcb8a47d539be9c0.css" integrity="sha256-SWSQOoIqessQ2sbRq1JIM8l/tfmbFBl2vLikfVOb6cA=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/en.search.min.39d9c08ce6d618a1bb96466345ebfe92958b3de36f8a8879331a839e4f6188fb.js" integrity="sha256-OdnAjObWGKG7lkZjRev&#43;kpWLPeNvioh5MxqDnk9hiPs=" crossorigin="anonymous"></script>
 
-ClassTag[T]保存着在运行时被JVM擦除的类型T的信息。当我们在运行时想获得被实例化的Array的类型信息的时候，这个特性会比较有用。
-"/>
-<meta name="application-name" content="My cool site">
-<meta name="apple-mobile-web-app-title" content="My cool site"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="icon" href="/images/avatar.svg"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://www.kaiux.cn/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8scala%E7%9A%84classtag/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "如何使用Scala的ClassTag",
-        "inLanguage": "zh-CN",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "https:\/\/www.kaiux.cn\/posts\/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8scala%E7%9A%84classtag\/"
-        },"genre": "posts","keywords": "Scala, ClassTag","wordcount":  3827 ,
-        "url": "https:\/\/www.kaiux.cn\/posts\/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8scala%E7%9A%84classtag\/","datePublished": "2019-06-19T09:09:07+00:00","dateModified": "2019-06-19T09:09:07+00:00","license": "小虞","publisher": {
-            "@type": "Organization",
-            "name": ""},"author": {
-                "@type": "Person",
-                "name": "小虞"
-            },"description": ""
-    }
-    </script></head>
-    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+  <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>小虞的博客</span>
+  </a>
+</h2>
 
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/" title="小虞的博客">小虞的博客</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> 文章 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="输入关键词" id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-                </a></div>
-        </div>
-    </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/" title="小虞的博客">小虞的博客</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="输入关键词" id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw" aria-hidden="true"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin" aria-hidden="true"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        取消
-                    </a>
-                </div><a class="menu-item" href="/posts/" title="">文章</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
-            </a></div>
-    </div>
-</header><div class="search-dropdown desktop">
-        <div id="search-dropdown-desktop"></div>
-    </div>
-    <div class="search-dropdown mobile">
-        <div id="search-dropdown-mobile"></div>
-    </div><main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">如何使用Scala的ClassTag</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/about_me" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>小虞</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>编程语言</a>&nbsp;<a href="/categories/scala/"><i class="far fa-folder fa-fw" aria-hidden="true"></i>Scala</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2019-06-19">2019-06-19</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;约 3827 字&nbsp;
-                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;预计阅读 8 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  data-kept="">
-                <div class="details-summary toc-title">
-                    <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+
+
+
+
+
+
+
+
+
   <ul>
-    <li><a href="#场景">场景</a></li>
-    <li><a href="#解决方案一">解决方案一</a></li>
-    <li><a href="#解决方案二">解决方案二</a></li>
-    <li><a href="#解决方案三">解决方案三</a></li>
-    <li><a href="#最终的方案">最终的方案</a></li>
-    <li><a href="#结论">结论</a></li>
-    <li><a href="#参考">参考</a></li>
+<li><strong>软件开发</strong>
+<ul>
+<li>
+  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+<br /></li>
+</ul>
+</li>
+</ul>
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="/posts"  target="_blank" rel="noopener">
+        Posts
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://github.com/kaiux"  target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>如何使用Scala的ClassTag</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#场景">场景</a></li>
+        <li><a href="#解决方案一">解决方案一</a></li>
+        <li><a href="#解决方案二">解决方案二</a></li>
+        <li><a href="#解决方案三">解决方案三</a></li>
+        <li><a href="#最终的方案">最终的方案</a></li>
+        <li><a href="#结论">结论</a></li>
+        <li><a href="#参考">参考</a></li>
+      </ul>
+    </li>
   </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>Scala官方文档中对于<code>ClassTag</code>的定义如下：</p>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+<article class="markdown book-post">
+  <h1>
+    <a href="/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Scala%E7%9A%84ClassTag/">如何使用Scala的ClassTag</a>
+  </h1>
+  
+  <h5>2019-06-19</h5>
+
+
+
+  
+  <div>
+    
+      <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>, 
+      <a href="/categories/Scala/">Scala</a>
+  </div>
+  
+
+  
+
+
+
+<p>Scala官方文档中对于<code>ClassTag</code>的定义如下：</p>
 <blockquote>
 <p><code>ClassTag[T]</code>保存着在运行时被JVM擦除的类型<code>T</code>的信息。当我们在运行时想获得被实例化的<code>Array</code>的类型信息的时候，这个特性会比较有用。</p>
 </blockquote>
 <p>下面请看一个具体的场景：</p>
-<h2 id="场景">场景</h2>
+<h2 id="场景">
+  场景
+  <a class="anchor" href="#%e5%9c%ba%e6%99%af">#</a>
+</h2>
 <p>假定有一个<code>Map[String, Any]</code>，给定一个指定的key，我们需要检查Map中是否存在该key对应的value，如果存在，则优雅地返回这个值。看起来很简单，下面让我们来实现它，并且逐渐理解<code>ClassTag</code>。</p>
-<h2 id="解决方案一">解决方案一</h2>
+<h2 id="解决方案一">
+  解决方案一
+  <a class="anchor" href="#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88%e4%b8%80">#</a>
+</h2>
 <p>我们的第一次尝试如下所示：</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="nc">Animal</span>
@@ -168,7 +234,10 @@ ClassTag[T]保存着在运行时被JVM擦除的类型T的信息。当我们在�
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">val</span> <span class="n">number</span><span class="k">:</span><span class="kt">Option</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="n">myMap</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&#34;Number&#34;</span><span class="o">)</span>
 </span></span></code></pre></div><p>你可能会想什么谁的代码里面会使用<code>Map[String, Any]</code>，这显然不是一个好的设计。但是我们先忽略这一点，并假设这个结构确实存在，下面我们回到这个问题。</p>
 <p>使用<code>asInstanceOf</code>显然也不是一个好的方案，处理<code>ClassCastException</code>的办法之一是使用<code>try/catch</code>，但是这个方案并不是一个可靠并且优雅的方案，所以我们并不会采用。</p>
-<h2 id="解决方案二">解决方案二</h2>
+<h2 id="解决方案二">
+  解决方案二
+  <a class="anchor" href="#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88%e4%ba%8c">#</a>
+</h2>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">Animal</span> <span class="o">{</span>
 </span></span><span class="line"><span class="cl">  <span class="k">override</span> <span class="k">def</span> <span class="n">toString</span> <span class="k">=</span> <span class="s">&#34;I am Animal&#34;</span>
 </span></span><span class="line"><span class="cl"><span class="o">}</span>
@@ -226,7 +295,10 @@ ClassTag[T]保存着在运行时被JVM擦除的类型T的信息。当我们在�
 </span></span><span class="line"><span class="cl"><span class="nc">Animal</span> <span class="n">is</span> <span class="nc">None</span>
 </span></span></code></pre></div><p>现在我们使用<code>getValueFromMapForXXX</code>方法来获取Map中<code>XXX</code>类型的值，从而避免了<code>ClassCastException</code>。</p>
 <p>虽然解决了之前的问题，但是现在的这个解决方案任然不够好，因为，当我们增加一个新的类型的时候，就要提供一个新的<code>getValueFromMapForXXX</code>方法。</p>
-<h2 id="解决方案三">解决方案三</h2>
+<h2 id="解决方案三">
+  解决方案三
+  <a class="anchor" href="#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88%e4%b8%89">#</a>
+</h2>
 <p>我们尝试使用类型参数来解决之前方案中<code>getValueFromMapForXXX</code>方法的可扩展性不足的问题。</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">def</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">T</span><span class="o">](</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">dataMap</span><span class="k">:</span> <span class="kt">collection.Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">])</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span> <span class="k">=</span>
 </span></span><span class="line"><span class="cl">  <span class="n">dataMap</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
@@ -344,7 +416,10 @@ ClassTag[T]保存着在运行时被JVM擦除的类型T的信息。当我们在�
 </span></span><span class="line"><span class="cl">      <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="nc">None</span>
 </span></span><span class="line"><span class="cl">    <span class="o">}</span>
 </span></span></code></pre></div><p>方法调用不需要做任何改变，因为编译器会为我们提供隐式的<code>ClassTag[T]</code>参数。</p>
-<h2 id="最终的方案">最终的方案</h2>
+<h2 id="最终的方案">
+  最终的方案
+  <a class="anchor" href="#%e6%9c%80%e7%bb%88%e7%9a%84%e6%96%b9%e6%a1%88">#</a>
+</h2>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="c1">// getValueFromMap
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">def</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">T:</span> <span class="kt">ClassTag</span><span class="o">](</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">dataMap</span><span class="k">:</span> <span class="kt">collection.Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">])</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
 </span></span><span class="line"><span class="cl">  <span class="n">dataMap</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
@@ -421,7 +496,10 @@ ClassTag[T]保存着在运行时被JVM擦除的类型T的信息。当我们在�
 </span></span><span class="line"><span class="cl"><span class="nc">Now</span> <span class="n">let</span> <span class="n">us</span> <span class="k">try</span> <span class="n">to</span> <span class="n">get</span> <span class="n">bad</span> <span class="n">list</span>
 </span></span><span class="line"><span class="cl"><span class="nc">None</span>
 </span></span></code></pre></div><p>现在，所有的问题都解决了，感谢Scala提供的<code>ClassTag</code>，帮我们在运行时获得我们传递的类型参数的信息。</p>
-<h2 id="结论">结论</h2>
+<h2 id="结论">
+  结论
+  <a class="anchor" href="#%e7%bb%93%e8%ae%ba">#</a>
+</h2>
 <p><code>ClassTag</code>对于我们在运行时获得类型参数<code>T</code>的信息是至关重要的，在多数情况下，它会提供许多便利。然而，它也有一些局限性，我们只能从<code>ClassTag</code>获取更高类型的信息，而不是参数类型更高的信息，这听起来有点绕，让我们看下面的例子。</p>
 <p>如果我们使用下面的代码：</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-scala" data-lang="scala"><span class="line"><span class="cl"><span class="k">val</span> <span class="n">goodList</span><span class="k">:</span><span class="kt">Option</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">]]</span> <span class="k">=</span> <span class="n">getValueFromMap</span><span class="o">[</span><span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">]](</span><span class="s">&#34;goodList&#34;</span><span class="o">,</span> <span class="n">someMap</span><span class="o">)</span>
@@ -432,40 +510,81 @@ ClassTag[T]保存着在运行时被JVM擦除的类型T的信息。当我们在�
 </span></span><span class="line"><span class="cl">    <span class="c1">// prints the list
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="n">println</span><span class="o">(</span><span class="n">goodList</span><span class="o">)</span>
 </span></span></code></pre></div><p>它仍然能正常工作，因为<code>ClassTag</code>仅仅在运行时提供更高的类型信息（List）不是参数类型的信息（Int、String）。这就是即使我们使用<code>getValueFromMap[List[Int]]</code>去接受key为<code>goodList</code>的value还能正常工作的原因。但是在有些情况下，我们需要在运行时获得参数的类型信息，这时候我们就需要使用<code>TypeTag</code>。</p>
-<h2 id="参考">参考</h2>
-<p><a href="https://dzone.com/articles/scala-classtag-a-simple-use-case" title="https://dzone.com/articles/scala-classtag-a-simple-use-case" target="_blank" rel="noopener noreffer ">How to Use the Scala ClassTag</a></p></div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>更新于 2019-06-19</span>
-            </div></div>
-        <div class="post-info-line">
-            <div class="post-info-md"></div>
-            <div class="post-info-share">
-                <span></span>
-            </div>
-        </div>
-    </div>
+<h2 id="参考">
+  参考
+  <a class="anchor" href="#%e5%8f%82%e8%80%83">#</a>
+</h2>
+<p>
+  <a href="https://dzone.com/articles/scala-classtag-a-simple-use-case" title="https://dzone.com/articles/scala-classtag-a-simple-use-case">How to Use the Scala ClassTag</a></p></article>
+ 
+      
 
-    <div class="post-info-more">
-        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/scala/">Scala</a>,&nbsp;<a href="/tags/classtag/">ClassTag</a></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
-        </section>
-    </div>
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
 
-    <div class="post-nav"></div>
+
+
+
+
 </div>
-</article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2019 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/about_me" target="_blank">小虞</a></span></div>
-        </div>
-    </footer></div>
 
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
-            </a>
-        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/autocomplete.js@0.38.1/dist/autocomplete.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/copy-tex.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/mhchem.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":100},"comment":{},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#场景">场景</a></li>
+        <li><a href="#解决方案一">解决方案一</a></li>
+        <li><a href="#解决方案二">解决方案二</a></li>
+        <li><a href="#解决方案三">解决方案三</a></li>
+        <li><a href="#最终的方案">最终的方案</a></li>
+        <li><a href="#结论">结论</a></li>
+        <li><a href="#参考">参考</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
