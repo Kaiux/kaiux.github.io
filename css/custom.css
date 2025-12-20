@@ -1,0 +1,50 @@
+/* 声明自定义字体 */
+@font-face {
+  font-family: 'LXGWWenKaiLite';
+  src: url('../fonts/LXGWWenKaiLite.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* 优化加载体验 */
+}
+
+@font-face {
+  font-family: 'LXGWWenKaiLite';
+  src: url('../fonts/LXGWWenKaiLite.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 应用到全局 */
+body,
+button,
+input,
+select,
+textarea {
+  font-family: 'LXGWWenKaiLite', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+/* 可选：标题单独设置 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'LXGWWenKaiLite', sans-serif !important;
+}
+
+/* 调大 Mainroad 的文章正文字体 */
+.content,
+.content p,
+.content li,
+.content div {
+  font-size: 1.0rem !important; /* 18px */
+  line-height: 1.5 !important;
+}
+
+/* 可选：标题也适当调整 */
+.content h1 { font-size: 1.75rem !important; }
+.content h2 { font-size: 1.5rem !important; }
+.content h3 { font-size: 1.25rem !important; }
+
+/* 代码块字体（保持等宽） */
+.highlight pre,
+.highlight code {
+  font-size: 0.95rem !important;
+}
