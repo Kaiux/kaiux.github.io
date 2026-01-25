@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>基数估计的黑魔法：HyperLogLog 原理与实现 - 念风零壹</title>
+	<script>(function(d,e){d[e]=d[e].replace("no-js","js");})(document.documentElement,"className");</script>
+	<meta name="description" content="">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="dns-prefetch" href="//fonts.googleapis.com">
+	<link rel="dns-prefetch" href="//fonts.gstatic.com">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700">
+
+	<link rel="stylesheet" href="/css/style.css">
+	<link rel="stylesheet" href="/css/custom.css">
+
+	<link rel="shortcut icon" href="/favicon.ico">
+		
+		
+</head>
+<body class="body">
+	<div class="container container--outer">
+		<header class="header">
+	<div class="container header__container">
+		
+	<div class="logo">
+		<a class="logo__link" href="/" title="念风零壹" rel="home">
+			<div class="logo__item logo__text">
+					<div class="logo__title">念风零壹</div>
+					
+				</div>
+		</a>
+	</div>
+		<div class="divider"></div>
+	</div>
+</header>
+		<div class="wrapper flex">
+			<div class="primary">
+			
+<main class="main" role="main">
+	<article class="post">
+		<header class="post__header">
+			<h1 class="post__title">基数估计的黑魔法：HyperLogLog 原理与实现</h1>
+			
+		</header>
+		<div class="content post__content clearfix">
+			<h2 id="1-引言从一道经典的面试题说起">1. 引言：从一道经典的面试题说起</h2>
+<p>在海量数据处理领域，有一个几乎被问烂了的问题：</p>
+<blockquote>
+<p>“给你 10 亿个 IP 地址，内存限制只有1MB，如何计算其中有多少个唯一的 IP（基数统计，Cardinality Estimation）？”</p>
+</blockquote>
+<p>如果使用 <code>std::set</code> 或 <code>HashSet</code>，光是存储这 10 亿个 IP 可能就会耗尽内存。即便使用 <strong>Bitmap</strong>，在数据稀疏的情况下依然不够节省。</p>
+<p>今天我们聊聊 <strong>HyperLogLog (HLL)</strong>。它是一种概率算法，仅需几KB内存，就能以标准误差小于 2% 的精度估算 10 亿级数据的基数。</p>
+<h2 id="2-直觉抛硬币的黑魔法">2. 直觉：抛硬币的“黑魔法”</h2>
+<p>想象你在玩一个简单的抛硬币游戏：<strong>反面记为 0，正面记为 1</strong>。规则很简单：你不断抛硬币，直到出现 <strong>第一个正面（1）</strong> 时，本轮游戏结束。</p>
+<p>根据概率论，我们可以观察到一组有趣的现象：</p>
+<ul>
+<li><strong>第 1 次</strong>就抛出正面的概率是$\frac{1}{2}$；</li>
+<li><strong>连续 2 次</strong>反面后才出现正面的概率是 $\frac{1}{8}$；</li>
+<li><strong>连续 $n$ 次</strong>反面后才出现正面的概率是 $\frac{1}{2^{n+1}}$。</li>
+</ul>
+<p><strong>这里隐藏着一个核心逻辑：</strong> 如果你观测到了一个极其罕见的序列，比如连续出现了 20 个反面才看到正面（概率约为百万分之一），那么直觉会告诉你：<strong>为了碰上这么一次“狗屎运”，你肯定已经在大后方默默尝试了上百万次。</strong></p>
+<p>我们将这个直觉转化为推断公式：</p>
+<blockquote>
+<p>如果我们在实验中观测到的“连续反面”的最大长度为 $n$，那么我们可以大胆推测，总共大约进行了 $2^{n+1}$ 次实验。</p>
+</blockquote>
+<p><strong>注意：</strong> 这只是一个“合理的推测”而非精确值。正如你不可能通过一次好运就断定自己是亿万富翁一样，HyperLogLog 也是通过这种概率分布来做<strong>近似估算</strong>。</p>
+<h2 id="3-从抛硬币到比特流hyperloglog-的数学底座">3. 从抛硬币到比特流：HyperLogLog 的数学底座</h2>
+<p>在计算机的世界里，万物皆比特（0 和 1）。我们可以巧妙地将数据对应的二进制串，看作一系列“抛硬币”的结果：<strong>0 代表反面，1 代表正面。</strong></p>
+<p>我们规定：<strong>从右向左扫描（从低位向高位），直到遇见第一个 <code>1</code>（正面）时，本轮“游戏”结束。</strong></p>
+<ul>
+<li><strong>序列 <code>...01</code></strong>：第一次就抛出正面，游戏结束。抛掷次数 = 1。</li>
+<li><strong>序列 <code>...010</code></strong>：第一次反面，第二次正面。抛掷次数 = 2。（注意：第一个 <code>1</code> 之后的所有位，在概率推断中均可忽略，因为“游戏”已经结束了）。</li>
+<li><strong>序列 <code>...1000</code></strong>：前三次均为反面，第四次才看到正面。抛掷次数 = 4。</li>
+<li><strong>序列 <code>...1</code> 后面跟着 $n$ 个 <code>0</code></strong>：说明连续出现了 $n$ 次反面。</li>
+</ul>
+<p><strong>现在我们来做一道概率题：</strong> 在随机分布的比特流中，连续出现 $n$ 个 <code>0</code> 才结束游戏的概率是多少？答案很简单：$\frac{1}{2^{n+1}}$。</p>
+<p><strong>逆向思维：</strong> 假设我手里有一堆二进制串，其中我观察到的<strong>最长连续零长度</strong>是 $n$。根据前面的结论，我们可以反推：<strong>为了撞见这个“奇迹”，我大约已经看过了 $2^{n+1}$ 个不同的二进制串。</strong></p>
+<p><strong>这就是 HyperLogLog 的核心原理：</strong></p>
+<ol>
+<li><strong>观察极端值</strong>：不记录数据本身，只记录所有数据中观测到的<strong>最大连续零的长度</strong>（记为 $\rho$）。</li>
+<li><strong>基数推测</strong>：利用这个最大长度反推数据的唯一数量（基数）。</li>
+</ol>
+<blockquote>
+<p><strong>一句话总结：</strong> 看到连续的 $n$ 个 $0$，就说明大概率已经有 $2^{n+1}$ 种不同的数据来过这里。</p>
+</blockquote>
+<h2 id="4-落地中的挑战从理论走向工程">4. 落地中的挑战：从理论走向工程</h2>
+<h3 id="41-问题一打破规律性为什么需要-hash">4.1 问题一：打破规律性（为什么需要 Hash）</h3>
+<p>刚才的数学推导建立在一个 <strong>“强假设”</strong> 之上：比特流中出现 <code>0</code> 和 <code>1</code> 的概率必须严格满足 <strong>1:1</strong>，且位与位之间相互独立。换句话说，这必须是一枚 <strong>“绝对公平的硬币”</strong>。</p>
+<p>但在现实工程中，原始数据往往是极其“不公平”的。试想我们要统计一组连续的 User ID：<code>1000</code>, <code>1001</code>, <code>1002</code>&hellip; 它们的二进制表示在长段前缀上几乎完全相同：</p>
+<ul>
+<li><code>1000</code> -&gt; <code>...001111101000</code></li>
+<li><code>1001</code> -&gt; <code>...001111101001</code></li>
+</ul>
+<p>如果这些 ID 本身恰好带有大量的连续零（比如低位 ID），HLL 就会产生严重的幻觉，误以为观测到了概率极其微小的“稀有事件”，从而给出一个天文数字般的错误估算。</p>
+<p>为了修补这个漏洞，我们必须引入 <strong>Hash 函数</strong>。</p>
+<p>虽然本文不深入探讨各种哈希算法的实现，但请务必记住它的核心使命：<strong>将规律的数据“打散”，转化为均匀分布、随机扰动的比特流。</strong> 在 HyperLogLog 的世界里，哈希不是为了加密，而是为了确保我们抛出的每一枚硬币都是“公平”的。</p>
+<p><img src="/posts/%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81hash.jpg" alt="为什么需要hash"></p>
+<h3 id="42-问题二如何消除暴发户偏差">4.2. 问题二：如何消除“暴发户”偏差</h3>
+<p>即便硬币是公平的，概率依然存在极端情况。万一你运气爆棚，第一轮就抛出了 30 个连续的 <code>0</code> 呢？</p>
+<p>算法会天真地认为你已经拥有了 10 亿条数据，而实际上你可能只插入了一条。这种单点极端值带来的偏差，在统计学上是灾难性的。</p>
+<p>为了让结果回归理性，HyperLogLog 引入了两大“降噪”利器：<strong>分桶（Bucketing）</strong> 与 <strong>调和平均（Harmonic Mean）</strong>。</p>
+<h4 id="421-分桶不把鸡蛋放在一个篮子里">4.2.1 分桶：不把鸡蛋放在一个篮子里</h4>
+<p>既然一个人的“运气”不可靠，那我们就观察一群人的平均水平。</p>
+<p>我们将 64 位的哈希值（或原始二进制流）切分为两部分：</p>
+<ul>
+<li><strong>高 $b$ 位（桶索引）</strong>：用来决定这个数据该去哪个“房间”。如果 $b=10$，我们就拥有 $m = 2^{10} = 1024$ 个独立的桶（Registers）。</li>
+<li><strong>剩余位（抛硬币）</strong>：在对应的桶里记录它所看到的最大连续零的长度。</li>
+</ul>
+<p>这样一来，原本的一个“超级大猜测”，被拆分成了 1024 个“独立小猜测”。即使某个桶因为运气爆棚记录了一个异常大的值，它也只能影响 1024 分之一的决策权重，无法左右大局。</p>
+<p><img src="/posts/%E5%88%86%E6%A1%B6.jpg" alt="分桶"></p>
+<h4 id="422-调和平均对暴发户的降维打击">4.2.2 调和平均：对“暴发户”的降维打击</h4>
+<p>汇总这 1024 个桶的结果时，如果使用简单的<strong>算术平均</strong>，效果会非常糟糕。</p>
+<p><strong>举个例子：</strong></p>
+<p>假设 1023 个桶的值都是 <code>1</code>，只有一个桶因为极端运气变成了 <code>100</code>。</p>
+<ul>
+<li><strong>算术平均</strong>：$(1 \times 1023 + 100) / 1024 \approx 1.1$。看起来波动不大？别忘了，HLL 的估算是<strong>指数级</strong>的！原本是 $2^1$，现在变成了 $2^{1.1}$，误差会被瞬间放大。</li>
+</ul>
+<p>为此，HLL 采用了<strong>调和平均数（Harmonic Mean）</strong>：</p>
+<p>$$H = \frac{m}{\sum_{i=1}^m \frac{1}{R_i}}$$</p>
+<p>调和平均数有一个非常重要的特性：<strong>它对极大的异常值（暴发户）非常不敏感，而对较小的值更敏感。</strong></p>
+<p><img src="/posts/%E8%B0%83%E5%92%8C%E5%B9%B3%E5%9D%87.jpg" alt="调和平均"></p>
+<p>通过这种方式，那些因为偶然“运气好”而产生的极端大值会被有效地平滑掉，从而让估算结果稳稳地落在真实基数附近。</p>
+<h4 id="423-修正参数消除算法的自带偏差">4.2.3 修正参数：消除算法的“自带偏差”</h4>
+<p>即便有了分桶和调和平均，数学家们在实验中发现，HLL 的原始估算公式（直接用调和平均反推）依然存在一个<strong>系统性的固有偏差</strong>。</p>
+<p>简单来说，就是算法在逻辑上会习惯性地“高估”或“低估”真实基数，且这种偏差与桶的数量 $m$ 有关。</p>
+<p>为了让估算值尽可能逼近真实值，HLL 引入了一个<strong>修正常数 $\alpha_m$</strong>。在不同的分桶精度下，这个常数有所不同：</p>
+<ul>
+<li>当 $m=16$ 时，$\alpha_m = 0.673$</li>
+<li>当 $m=32$ 时，$\alpha_m = 0.697$</li>
+<li>当 $m \ge 128$ 时，$\alpha_m$ 趋于稳定值： $$\alpha_m \approx \frac{0.7213}{1 + 1.079/m}$$
+你在代码中看到的 <code>0.7213 / (1 + 1.079 / m)</code> 这一串数字，就像是给这台精密的天平做最后的 <strong>“调零”</strong>。如果没有它，HLL 的误差曲线会整体偏移。</li>
+</ul>
+<h2 id="5-具体实现">5. 具体实现</h2>
+<p>在实现 HyperLogLog 时，我们需要重点关注两个工程细节：<strong>高效的位运算</strong>和<strong>小范围修正</strong>。</p>
+<p><strong>核心实现要点：</strong></p>
+<ol>
+<li><strong>硬件加速</strong>：我们使用了 GCC 内置的 <code>__builtin_ctzll</code> 指令。它能直接调用 CPU 级别的指令（如 x86 上的 <code>BSF</code> 或 <code>TZCNT</code>）来统计末尾零的个数，这比手写循环判断位要快得多。</li>
+<li><strong>内存效率</strong>：每个寄存器（Register）仅占用 8 bits（<code>uint8_t</code>），因为 64 位整数的连续零长度不可能超过 64。在 1024 个桶的配置下，整个数据结构仅占用 <strong>1 KB</strong> 内存。</li>
+<li><strong>Linear Counting 修正</strong>：概率算法在数据量极小时（桶还没被填满）误差较大。因此，当估算值较小时，我们切换到 <strong>Linear Counting</strong> 算法，利用空桶的比例来计算基数，从而保证全量程的准确性。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="background-color:#f7f7f7;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#57606a">#include</span> <span style="color:#57606a">&lt;stdio.h&gt;</span><span style="color:#57606a">
+</span></span></span><span style="display:flex;"><span><span style="color:#57606a">#include</span> <span style="color:#57606a">&lt;stdint.h&gt;</span><span style="color:#57606a">
+</span></span></span><span style="display:flex;"><span><span style="color:#57606a">#include</span> <span style="color:#57606a">&lt;math.h&gt;</span><span style="color:#57606a">
+</span></span></span><span style="display:flex;"><span><span style="color:#57606a">#include</span> <span style="color:#57606a">&lt;string.h&gt;</span><span style="color:#57606a">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a">// 精度参数 k (桶数为 2^10 = 1024)
+</span></span></span><span style="display:flex;"><span><span style="color:#57606a">#define HLL_PRECISION 10
+</span></span></span><span style="display:flex;"><span><span style="color:#57606a">#define HLL_REGISTERS (1 &lt;&lt; HLL_PRECISION)
+</span></span></span><span style="display:flex;"><span><span style="color:#57606a">#define HLL_MASK (HLL_REGISTERS - 1)
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#cf222e">typedef</span> <span style="color:#cf222e">struct</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">uint8_t</span> registers<span style="color:#1f2328">[</span>HLL_REGISTERS<span style="color:#1f2328">];</span>
+</span></span><span style="display:flex;"><span><span style="color:#1f2328">}</span> HyperLogLog<span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#57606a"> * 简单的 64 位哈希函数 (MurmurHash3 混合部分)
+</span></span></span><span style="display:flex;"><span><span style="color:#57606a"> * 在生产环境中，建议直接使用完整的 MurmurHash3 或 CityHash
+</span></span></span><span style="display:flex;"><span><span style="color:#57606a"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#cf222e">uint64_t</span> <span style="color:#6639ba">hash_64</span><span style="color:#1f2328">(</span><span style="color:#cf222e">const</span> <span style="color:#cf222e">void</span> <span style="color:#0550ae">*</span>key<span style="color:#1f2328">,</span> <span style="color:#cf222e">int</span> len<span style="color:#1f2328">)</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">uint64_t</span> h <span style="color:#0550ae">=</span> <span style="color:#0550ae">0x12345678abcdefLL</span><span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">const</span> <span style="color:#cf222e">uint8_t</span> <span style="color:#0550ae">*</span>data <span style="color:#0550ae">=</span> <span style="color:#1f2328">(</span><span style="color:#cf222e">const</span> <span style="color:#cf222e">uint8_t</span> <span style="color:#0550ae">*</span><span style="color:#1f2328">)</span>key<span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">for</span> <span style="color:#1f2328">(</span><span style="color:#cf222e">int</span> i <span style="color:#0550ae">=</span> <span style="color:#0550ae">0</span><span style="color:#1f2328">;</span> i <span style="color:#0550ae">&lt;</span> len<span style="color:#1f2328">;</span> i<span style="color:#0550ae">++</span><span style="color:#1f2328">)</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>        h <span style="color:#0550ae">^=</span> data<span style="color:#1f2328">[</span>i<span style="color:#1f2328">];</span>
+</span></span><span style="display:flex;"><span>        h <span style="color:#0550ae">*=</span> <span style="color:#0550ae">0xbf58476d1ce4e5b9LL</span><span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span>        h <span style="color:#0550ae">^=</span> h <span style="color:#0550ae">&gt;&gt;</span> <span style="color:#0550ae">33</span><span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#1f2328">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">return</span> h<span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#1f2328">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#57606a"> * 获取第一个 1 出现的位置 (ρ 值)
+</span></span></span><span style="display:flex;"><span><span style="color:#57606a"> * 剔除掉用于分桶的位，统计剩余位中末尾 0 的个数
+</span></span></span><span style="display:flex;"><span><span style="color:#57606a"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#cf222e">uint8_t</span> <span style="color:#6639ba">get_rho</span><span style="color:#1f2328">(</span><span style="color:#cf222e">uint64_t</span> hash<span style="color:#1f2328">)</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">uint64_t</span> v <span style="color:#0550ae">=</span> hash <span style="color:#0550ae">&gt;&gt;</span> HLL_PRECISION<span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">if</span> <span style="color:#1f2328">(</span>v <span style="color:#0550ae">==</span> <span style="color:#0550ae">0</span><span style="color:#1f2328">)</span> <span style="color:#cf222e">return</span> <span style="color:#0550ae">64</span> <span style="color:#0550ae">-</span> HLL_PRECISION<span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#57606a">// 使用内置函数统计末尾 0 的个数，+1 表示第一个 1 出现的位置
+</span></span></span><span style="display:flex;"><span>    <span style="color:#cf222e">return</span> <span style="color:#1f2328">(</span><span style="color:#cf222e">uint8_t</span><span style="color:#1f2328">)</span><span style="color:#6639ba">__builtin_ctzll</span><span style="color:#1f2328">(</span>v<span style="color:#1f2328">)</span> <span style="color:#0550ae">+</span> <span style="color:#0550ae">1</span><span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#1f2328">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a">// 初始化：将所有寄存器清零
+</span></span></span><span style="display:flex;"><span><span style="color:#cf222e">void</span> <span style="color:#6639ba">hll_init</span><span style="color:#1f2328">(</span>HyperLogLog <span style="color:#0550ae">*</span>hll<span style="color:#1f2328">)</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6639ba">memset</span><span style="color:#1f2328">(</span>hll<span style="color:#0550ae">-&gt;</span>registers<span style="color:#1f2328">,</span> <span style="color:#0550ae">0</span><span style="color:#1f2328">,</span> HLL_REGISTERS<span style="color:#1f2328">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#1f2328">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a">// 添加元素：更新对应桶的最大 ρ 值
+</span></span></span><span style="display:flex;"><span><span style="color:#cf222e">void</span> <span style="color:#6639ba">hll_add</span><span style="color:#1f2328">(</span>HyperLogLog <span style="color:#0550ae">*</span>hll<span style="color:#1f2328">,</span> <span style="color:#cf222e">const</span> <span style="color:#cf222e">void</span> <span style="color:#0550ae">*</span>data<span style="color:#1f2328">,</span> <span style="color:#cf222e">int</span> len<span style="color:#1f2328">)</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">uint64_t</span> hash <span style="color:#0550ae">=</span> <span style="color:#6639ba">hash_64</span><span style="color:#1f2328">(</span>data<span style="color:#1f2328">,</span> len<span style="color:#1f2328">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">int</span> index <span style="color:#0550ae">=</span> hash <span style="color:#0550ae">&amp;</span> HLL_MASK<span style="color:#1f2328">;</span> <span style="color:#57606a">// 提取低位作为桶索引
+</span></span></span><span style="display:flex;"><span>    <span style="color:#cf222e">uint8_t</span> rho <span style="color:#0550ae">=</span> <span style="color:#6639ba">get_rho</span><span style="color:#1f2328">(</span>hash<span style="color:#1f2328">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">if</span> <span style="color:#1f2328">(</span>rho <span style="color:#0550ae">&gt;</span> hll<span style="color:#0550ae">-&gt;</span>registers<span style="color:#1f2328">[</span>index<span style="color:#1f2328">])</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>        hll<span style="color:#0550ae">-&gt;</span>registers<span style="color:#1f2328">[</span>index<span style="color:#1f2328">]</span> <span style="color:#0550ae">=</span> rho<span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#1f2328">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#1f2328">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#57606a">// 估算基数：调和平均数汇总 + 偏差修正
+</span></span></span><span style="display:flex;"><span><span style="color:#cf222e">double</span> <span style="color:#6639ba">hll_count</span><span style="color:#1f2328">(</span>HyperLogLog <span style="color:#0550ae">*</span>hll<span style="color:#1f2328">)</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">double</span> m <span style="color:#0550ae">=</span> HLL_REGISTERS<span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#57606a">// αm 修正系数
+</span></span></span><span style="display:flex;"><span>    <span style="color:#cf222e">double</span> alpha_m <span style="color:#0550ae">=</span> <span style="color:#0550ae">0.7213</span> <span style="color:#0550ae">/</span> <span style="color:#1f2328">(</span><span style="color:#0550ae">1</span> <span style="color:#0550ae">+</span> <span style="color:#0550ae">1.079</span> <span style="color:#0550ae">/</span> m<span style="color:#1f2328">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">double</span> sum <span style="color:#0550ae">=</span> <span style="color:#0550ae">0.0</span><span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">for</span> <span style="color:#1f2328">(</span><span style="color:#cf222e">int</span> i <span style="color:#0550ae">=</span> <span style="color:#0550ae">0</span><span style="color:#1f2328">;</span> i <span style="color:#0550ae">&lt;</span> HLL_REGISTERS<span style="color:#1f2328">;</span> i<span style="color:#0550ae">++</span><span style="color:#1f2328">)</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#57606a">// 计算 1 / 2^R[i]
+</span></span></span><span style="display:flex;"><span>        sum <span style="color:#0550ae">+=</span> <span style="color:#0550ae">1.0</span> <span style="color:#0550ae">/</span> <span style="color:#1f2328">(</span><span style="color:#0550ae">1ULL</span> <span style="color:#0550ae">&lt;&lt;</span> hll<span style="color:#0550ae">-&gt;</span>registers<span style="color:#1f2328">[</span>i<span style="color:#1f2328">]);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#1f2328">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">double</span> estimate <span style="color:#0550ae">=</span> alpha_m <span style="color:#0550ae">*</span> m <span style="color:#0550ae">*</span> m <span style="color:#0550ae">/</span> sum<span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#57606a">// 小范围修正 (Linear Counting)：
+</span></span></span><span style="display:flex;"><span>    <span style="color:#57606a">// 如果估算值小于 2.5 * 桶数，利用空桶率进行修正
+</span></span></span><span style="display:flex;"><span>    <span style="color:#cf222e">if</span> <span style="color:#1f2328">(</span>estimate <span style="color:#0550ae">&lt;=</span> <span style="color:#0550ae">2.5</span> <span style="color:#0550ae">*</span> m<span style="color:#1f2328">)</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cf222e">int</span> zeros <span style="color:#0550ae">=</span> <span style="color:#0550ae">0</span><span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cf222e">for</span> <span style="color:#1f2328">(</span><span style="color:#cf222e">int</span> i <span style="color:#0550ae">=</span> <span style="color:#0550ae">0</span><span style="color:#1f2328">;</span> i <span style="color:#0550ae">&lt;</span> HLL_REGISTERS<span style="color:#1f2328">;</span> i<span style="color:#0550ae">++</span><span style="color:#1f2328">)</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cf222e">if</span> <span style="color:#1f2328">(</span>hll<span style="color:#0550ae">-&gt;</span>registers<span style="color:#1f2328">[</span>i<span style="color:#1f2328">]</span> <span style="color:#0550ae">==</span> <span style="color:#0550ae">0</span><span style="color:#1f2328">)</span> zeros<span style="color:#0550ae">++</span><span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#1f2328">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cf222e">if</span> <span style="color:#1f2328">(</span>zeros <span style="color:#0550ae">&gt;</span> <span style="color:#0550ae">0</span><span style="color:#1f2328">)</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>            estimate <span style="color:#0550ae">=</span> m <span style="color:#0550ae">*</span> <span style="color:#6639ba">log</span><span style="color:#1f2328">(</span>m <span style="color:#0550ae">/</span> <span style="color:#1f2328">(</span><span style="color:#cf222e">double</span><span style="color:#1f2328">)</span>zeros<span style="color:#1f2328">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#1f2328">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#1f2328">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">return</span> estimate<span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#1f2328">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#cf222e">int</span> <span style="color:#6639ba">main</span><span style="color:#1f2328">()</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>    HyperLogLog hll<span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6639ba">hll_init</span><span style="color:#1f2328">(</span><span style="color:#0550ae">&amp;</span>hll<span style="color:#1f2328">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6639ba">printf</span><span style="color:#1f2328">(</span><span style="color:#0a3069">&#34;开始模拟插入 100,000 个唯一元素...</span><span style="color:#0a3069">\n</span><span style="color:#0a3069">&#34;</span><span style="color:#1f2328">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">for</span> <span style="color:#1f2328">(</span><span style="color:#cf222e">int</span> i <span style="color:#0550ae">=</span> <span style="color:#0550ae">0</span><span style="color:#1f2328">;</span> i <span style="color:#0550ae">&lt;</span> <span style="color:#0550ae">100000</span><span style="color:#1f2328">;</span> i<span style="color:#0550ae">++</span><span style="color:#1f2328">)</span> <span style="color:#1f2328">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cf222e">char</span> buf<span style="color:#1f2328">[</span><span style="color:#0550ae">32</span><span style="color:#1f2328">];</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#6639ba">sprintf</span><span style="color:#1f2328">(</span>buf<span style="color:#1f2328">,</span> <span style="color:#0a3069">&#34;element_%d&#34;</span><span style="color:#1f2328">,</span> i<span style="color:#1f2328">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#6639ba">hll_add</span><span style="color:#1f2328">(</span><span style="color:#0550ae">&amp;</span>hll<span style="color:#1f2328">,</span> buf<span style="color:#1f2328">,</span> <span style="color:#6639ba">strlen</span><span style="color:#1f2328">(</span>buf<span style="color:#1f2328">));</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#1f2328">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6639ba">printf</span><span style="color:#1f2328">(</span><span style="color:#0a3069">&#34;实际元素: 100000</span><span style="color:#0a3069">\n</span><span style="color:#0a3069">&#34;</span><span style="color:#1f2328">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6639ba">printf</span><span style="color:#1f2328">(</span><span style="color:#0a3069">&#34;估算基数: %.2f</span><span style="color:#0a3069">\n</span><span style="color:#0a3069">&#34;</span><span style="color:#1f2328">,</span> <span style="color:#6639ba">hll_count</span><span style="color:#1f2328">(</span><span style="color:#0550ae">&amp;</span>hll<span style="color:#1f2328">));</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#6639ba">printf</span><span style="color:#1f2328">(</span><span style="color:#0a3069">&#34;误差率:   %.2f%%</span><span style="color:#0a3069">\n</span><span style="color:#0a3069">&#34;</span><span style="color:#1f2328">,</span> <span style="color:#6639ba">fabs</span><span style="color:#1f2328">(</span><span style="color:#6639ba">hll_count</span><span style="color:#1f2328">(</span><span style="color:#0550ae">&amp;</span>hll<span style="color:#1f2328">)</span> <span style="color:#0550ae">-</span> <span style="color:#0550ae">100000</span><span style="color:#1f2328">)</span> <span style="color:#0550ae">/</span> <span style="color:#0550ae">100000</span> <span style="color:#0550ae">*</span> <span style="color:#0550ae">100</span><span style="color:#1f2328">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cf222e">return</span> <span style="color:#0550ae">0</span><span style="color:#1f2328">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#1f2328">}</span>
+</span></span></code></pre></div><p>运行结果：</p>
+<p><img src="/posts/hll%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C.png" alt="hll运行结果"></p>
+<h2 id="6-结语数学工程与-ai-的浪漫交响">6. 结语：数学、工程与 AI 的浪漫交响</h2>
+<p>HyperLogLog 这个略显怪诞的名字，实则镌刻着算法进化的三部曲，如同一场宏大的交响乐章：</p>
+<ul>
+<li><strong>Log（对数）：</strong> 核心律动。算法捕捉哈希值中连续零的位长 $\rho$，将宏大的基数映射为优雅的对数比例。</li>
+<li><strong>LogLog（双重对数）：</strong> 承前启后。2003 年，Philippe Flajolet 证明了仅需极小空间，便能窥见海量数据的轮廓。</li>
+<li><strong>Hyper（超越）：</strong> 最终华章。2007 年，调和平均数与偏差修正的引入，将精度推向了“超越”极限的高度。</li>
+</ul>
+<p><strong>解决工程瓶颈的钥匙，往往并非单纯的“暴力算力”，而是深邃的“数学模型”。</strong> 这种“以虚御实”的哲学，在当今 AI 的参数压缩与高效检索中依然大放异彩。</p>
+<p>从一枚硬币的随机博弈，到十亿级数据的基数估计，HyperLogLog 完美诠释了计算机科学的终极浪漫：<strong>以方寸内存，容纳寰宇信息；以概率之“朦胧”，换取性能之“巅峰”。</strong></p>
+<p>一位优秀的工程师能让代码无误；而一位卓越的工程师，则能借数学之美，令程序触碰物理极限。</p>
+
+		</div>
+	</article>
+</main>
+
+
+
+
+			</div>
+			
+		</div>
+		<footer class="footer">
+	<div class="container footer__container flex">
+		
+		<div class="footer__copyright">
+			&copy; 2026 念风零壹.
+			<span class="footer__copyright-credits">基于 <a href="https://gohugo.io/" rel="nofollow noopener" target="_blank">Hugo</a> 引擎和 <a href="https://github.com/Vimux/Mainroad/" rel="nofollow noopener" target="_blank">Mainroad</a> 主题</span>
+		</div>
+	</div>
+</footer>
+	</div>
+<script async defer src="/js/menu.js"></script>
+
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+</body>
+</html>

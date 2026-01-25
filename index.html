@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
 <head>
-	<meta name="generator" content="Hugo 0.153.0"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+	<meta name="generator" content="Hugo 0.154.5">
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>念风零壹</title>
@@ -17,6 +17,7 @@
 	<link rel="alternate" type="application/rss+xml" href="/index.xml" title="念风零壹">
 
 	<link rel="shortcut icon" href="/favicon.ico">
+		
 		
 </head>
 <body class="body">
@@ -43,6 +44,19 @@
 	
 	<header class="list__header">
 		<h2 class="list__title post__title">
+			<a href="/posts/hyperloglog-principles-and-implementation/" rel="bookmark">
+			基数估计的黑魔法：HyperLogLog 原理与实现
+			</a>
+		</h2>
+		
+	</header>
+	<div class="content list__excerpt post__content clearfix">
+		本文深入浅出地解析了 HyperLogLog算法的核心原理。从“抛硬币”的直觉出发，揭示了如何利用哈希比特流中的极端观测值推断海量数据的基数。并提供了一套基于 C 语言的实现方案。展示了如何通过严谨的数学模型，在极低内存下实现十亿级数据的高精度估算。
+	</div>
+</article><article class="list__item post">
+	
+	<header class="list__header">
+		<h2 class="list__title post__title">
 			<a href="/posts/how-to-use-scala-classtag/" rel="bookmark">
 			如何使用Scala的ClassTag
 			</a>
@@ -50,10 +64,7 @@
 		
 	</header>
 	<div class="content list__excerpt post__content clearfix">
-		<p>Scala官方文档中对于<code>ClassTag</code>的定义如下：</p>
-<blockquote>
-<p><code>ClassTag[T]</code>保存着在运行时被JVM擦除的类型<code>T</code>的信息。当我们在运行时想获得被实例化的<code>Array</code>的类型信息的时候，这个特性会比较有用。</p>
-</blockquote>
+		本文通过一个经典的 Map[String, Any] 类型转换场景，深入探讨 Scala 中 ClassTag 的必要性。文章通过三个迭代方案，演示了如何从脆弱的 asInstanceOf 逐步进化到利用 ClassTag 绕过 JVM 类型擦除，实现运行时的类型安全检查。
 	</div>
 </article>
 </main>
@@ -66,7 +77,7 @@
 	<div class="container footer__container flex">
 		
 		<div class="footer__copyright">
-			&copy; 2025 念风零壹.
+			&copy; 2026 念风零壹.
 			<span class="footer__copyright-credits">基于 <a href="https://gohugo.io/" rel="nofollow noopener" target="_blank">Hugo</a> 引擎和 <a href="https://github.com/Vimux/Mainroad/" rel="nofollow noopener" target="_blank">Mainroad</a> 主题</span>
 		</div>
 	</div>

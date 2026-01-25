@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+<head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>如何使用Scala的ClassTag - 念风零壹</title>
@@ -15,6 +15,7 @@
 	<link rel="stylesheet" href="/css/custom.css">
 
 	<link rel="shortcut icon" href="/favicon.ico">
+		
 		
 </head>
 <body class="body">
@@ -354,6 +355,7 @@
 </span></span></code></pre></div><p>它仍然能正常工作，因为<code>ClassTag</code>仅仅在运行时提供更高的类型信息（List）不是参数类型的信息（Int、String）。这就是即使我们使用<code>getValueFromMap[List[Int]]</code>去接受key为<code>goodList</code>的value还能正常工作的原因。但是在有些情况下，我们需要在运行时获得参数的类型信息，这时候我们就需要使用<code>TypeTag</code>。</p>
 <h2 id="参考">参考</h2>
 <p><a href="https://dzone.com/articles/scala-classtag-a-simple-use-case" title="https://dzone.com/articles/scala-classtag-a-simple-use-case">How to Use the Scala ClassTag</a></p>
+
 		</div>
 	</article>
 </main>
@@ -368,12 +370,23 @@
 	<div class="container footer__container flex">
 		
 		<div class="footer__copyright">
-			&copy; 2025 念风零壹.
+			&copy; 2026 念风零壹.
 			<span class="footer__copyright-credits">基于 <a href="https://gohugo.io/" rel="nofollow noopener" target="_blank">Hugo</a> 引擎和 <a href="https://github.com/Vimux/Mainroad/" rel="nofollow noopener" target="_blank">Mainroad</a> 主题</span>
 		</div>
 	</div>
 </footer>
 	</div>
 <script async defer src="/js/menu.js"></script>
+
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
 </body>
 </html>

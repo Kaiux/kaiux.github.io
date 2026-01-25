@@ -2,18 +2,25 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on 念风零壹</title>
-    <link>http://localhost:1313/posts/</link>
+    <link>https://www.kaiud.cn/posts/</link>
     <description>Recent content in Posts on 念风零壹</description>
     <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 19 Jun 2019 09:09:07 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 25 Jan 2026 11:50:42 +0800</lastBuildDate>
+    <atom:link href="https://www.kaiud.cn/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>基数估计的黑魔法：HyperLogLog 原理与实现</title>
+      <link>https://www.kaiud.cn/posts/hyperloglog-principles-and-implementation/</link>
+      <pubDate>Sun, 25 Jan 2026 11:50:42 +0800</pubDate>
+      <guid>https://www.kaiud.cn/posts/hyperloglog-principles-and-implementation/</guid>
+      <description>本文深入浅出地解析了 HyperLogLog算法的核心原理。从“抛硬币”的直觉出发，揭示了如何利用哈希比特流中的极端观测值推断海量数据的基数。并提供了一套基于 C 语言的实现方案。展示了如何通过严谨的数学模型，在极低内存下实现十亿级数据的高精度估算。</description>
+    </item>
     <item>
       <title>如何使用Scala的ClassTag</title>
-      <link>http://localhost:1313/posts/how-to-use-scala-classtag/</link>
-      <pubDate>Wed, 19 Jun 2019 09:09:07 +0000</pubDate>
-      <guid>http://localhost:1313/posts/how-to-use-scala-classtag/</guid>
-      <description>&lt;p&gt;Scala官方文档中对于&lt;code&gt;ClassTag&lt;/code&gt;的定义如下：&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;&lt;code&gt;ClassTag[T]&lt;/code&gt;保存着在运行时被JVM擦除的类型&lt;code&gt;T&lt;/code&gt;的信息。当我们在运行时想获得被实例化的&lt;code&gt;Array&lt;/code&gt;的类型信息的时候，这个特性会比较有用。&lt;/p&gt;&#xA;&lt;/blockquote&gt;</description>
+      <link>https://www.kaiud.cn/posts/how-to-use-scala-classtag/</link>
+      <pubDate>Wed, 19 Jun 2019 09:09:07 +0800</pubDate>
+      <guid>https://www.kaiud.cn/posts/how-to-use-scala-classtag/</guid>
+      <description>本文通过一个经典的 Map[String, Any] 类型转换场景，深入探讨 Scala 中 ClassTag 的必要性。文章通过三个迭代方案，演示了如何从脆弱的 asInstanceOf 逐步进化到利用 ClassTag 绕过 JVM 类型擦除，实现运行时的类型安全检查。</description>
     </item>
   </channel>
 </rss>
