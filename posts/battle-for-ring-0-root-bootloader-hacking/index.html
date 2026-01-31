@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=8080&amp;path=livereload" data-no-instant defer></script>
+<head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>硬核科普：为何小米任天堂封杀 Root？揭秘操作系统从启动到“夺权”的底层游戏 - 念风零壹</title>
@@ -15,6 +15,7 @@
 	<link rel="stylesheet" href="/css/custom.css">
 
 	<link rel="shortcut icon" href="/favicon.ico">
+		
 		
 </head>
 <body class="body">
@@ -66,10 +67,10 @@
 <li><strong>老管家叫 BIOS</strong>。它是个守旧派，只懂 16 位汇编语言，只能呆板地读取硬盘头部的 MBR，干活慢且效率低。</li>
 <li><strong>新管家叫 UEFI</strong>。它本质上已经是一个<strong>微型操作系统</strong>了。它能读懂文件系统（比如 FAT32），能直接运行后缀为 <code>.efi</code> 的可执行程序，甚至能联网。这也是为什么现在的 BIOS 界面能用鼠标、能截图，甚至做得花里胡哨的原因。</li>
 </ul>
+<p><img src="/posts/bios.jpg" alt=""></p>
 <p><strong>2. 嵌入式界的管家：BootROM</strong></p>
 <p>对于<strong>小米手机</strong>或 <strong>Switch</strong> 这种嵌入式设备（通常是 ARM 架构），虽然它们没有像电脑那样可以按 <code>Del</code> 键进入的图形化 UEFI 界面，但核心逻辑是一样的。</p>
 <p>它们依靠的是芯片出厂时就在内部烧录死的一小段代码——<strong>BootROM</strong>。它是硬件苏醒后执行的第一段代码，比任何软件都早，且无法被修改。它的职责单一而神圣：初始化最基本的硬件，然后去寻找并验证下一棒接力者。</p>
-<p><img src="/posts/bios.jpg" alt=""></p>
 <h2 id="三灵活的中间人">三、灵活的中间人</h2>
 <p>当 UEFI 或 BootROM 自检完硬件，准备把权力移交给操作系统时，它不会直接唤醒 Windows 或 Linux 的内核，而是先唤醒一位中间人——<strong>Bootloader</strong>（在 Linux PC 世界里通常是 GRUB，在安卓/手机世界里通常是 U-Boot 或厂商自研的 Bootloader）。</p>
 <p><strong>为什么要绕一圈，不能直接加载内核吗？</strong></p>

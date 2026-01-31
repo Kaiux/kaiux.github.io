@@ -2,23 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:8080/posts/</loc>
+    <loc>https://www.kaiud.cn/posts/</loc>
     <lastmod>2026-01-31T15:00:08+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:8080/</loc>
+    <loc>https://www.kaiud.cn/</loc>
     <lastmod>2026-01-31T15:00:08+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:8080/posts/battle-for-ring-0-root-bootloader-hacking/</loc>
+    <loc>https://www.kaiud.cn/posts/battle-for-ring-0-root-bootloader-hacking/</loc>
     <lastmod>2026-01-31T15:00:08+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:8080/posts/hyperloglog-principles-and-implementation/</loc>
+    <loc>https://www.kaiud.cn/posts/hyperloglog-principles-and-implementation/</loc>
     <lastmod>2026-01-25T11:50:42+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:8080/posts/how-to-use-scala-classtag/</loc>
+    <loc>https://www.kaiud.cn/posts/how-to-use-scala-classtag/</loc>
     <lastmod>2019-06-19T09:09:07+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:8080/categories/</loc>
+    <loc>https://www.kaiud.cn/categories/</loc>
   </url><url>
-    <loc>http://localhost:8080/tags/</loc>
+    <loc>https://www.kaiud.cn/tags/</loc>
   </url>
 </urlset>
