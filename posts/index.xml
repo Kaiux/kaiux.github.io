@@ -2,24 +2,31 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on 念风零壹</title>
-    <link>https://www.kaiud.cn/posts/</link>
+    <link>http://localhost:8080/posts/</link>
     <description>Recent content in Posts on 念风零壹</description>
     <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 25 Jan 2026 11:50:42 +0800</lastBuildDate>
-    <atom:link href="https://www.kaiud.cn/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 31 Jan 2026 15:00:08 +0800</lastBuildDate>
+    <atom:link href="http://localhost:8080/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>硬核科普：为何小米任天堂封杀 Root？揭秘操作系统从启动到“夺权”的底层游戏</title>
+      <link>http://localhost:8080/posts/battle-for-ring-0-root-bootloader-hacking/</link>
+      <pubDate>Sat, 31 Jan 2026 15:00:08 +0800</pubDate>
+      <guid>http://localhost:8080/posts/battle-for-ring-0-root-bootloader-hacking/</guid>
+      <description>小米锁BL、任天堂反破解，厂商在怕什么？本文硬核拆解从开机到“夺权”的底层逻辑。穿越UEFI权力交接，揭秘Ring0物理防线与Root本质，深度剖析Switch硬破的“电压故障注入”原理。带你深入微观世界，看懂这场芯片深处的信任链攻防战。</description>
+    </item>
     <item>
       <title>基数估计的黑魔法：HyperLogLog 原理与实现</title>
-      <link>https://www.kaiud.cn/posts/hyperloglog-principles-and-implementation/</link>
+      <link>http://localhost:8080/posts/hyperloglog-principles-and-implementation/</link>
       <pubDate>Sun, 25 Jan 2026 11:50:42 +0800</pubDate>
-      <guid>https://www.kaiud.cn/posts/hyperloglog-principles-and-implementation/</guid>
+      <guid>http://localhost:8080/posts/hyperloglog-principles-and-implementation/</guid>
       <description>本文深入浅出地解析了 HyperLogLog算法的核心原理。从“抛硬币”的直觉出发，揭示了如何利用哈希比特流中的极端观测值推断海量数据的基数。并提供了一套基于 C 语言的实现方案。展示了如何通过严谨的数学模型，在极低内存下实现十亿级数据的高精度估算。</description>
     </item>
     <item>
       <title>如何使用Scala的ClassTag</title>
-      <link>https://www.kaiud.cn/posts/how-to-use-scala-classtag/</link>
+      <link>http://localhost:8080/posts/how-to-use-scala-classtag/</link>
       <pubDate>Wed, 19 Jun 2019 09:09:07 +0800</pubDate>
-      <guid>https://www.kaiud.cn/posts/how-to-use-scala-classtag/</guid>
+      <guid>http://localhost:8080/posts/how-to-use-scala-classtag/</guid>
       <description>本文通过一个经典的 Map[String, Any] 类型转换场景，深入探讨 Scala 中 ClassTag 的必要性。文章通过三个迭代方案，演示了如何从脆弱的 asInstanceOf 逐步进化到利用 ClassTag 绕过 JVM 类型擦除，实现运行时的类型安全检查。</description>
     </item>
   </channel>
