@@ -1,28 +1,33 @@
-/* -----------------------------------------------------------
-   1. 字体引入：使用 CDN 切片版 (lxgw-wenkai-screen-web)
------------------------------------------------------------ */
-@import url('https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-web/style.css');
+/* 声明自定义字体 */
+@font-face {
+  font-family: 'LXGWWenKaiLite';
+  src: url('../fonts/LXGWWenKaiLite.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* 优化加载体验 */
+}
 
-/* -----------------------------------------------------------
-   2. 全局字体设置
------------------------------------------------------------ */
+@font-face {
+  font-family: 'LXGWWenKaiLite';
+  src: url('../fonts/LXGWWenKaiLite.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 应用到全局 */
 body,
 button,
 input,
 select,
 textarea {
-  /* 优先使用 'LXGW WenKai Screen Web' */
-  font-family: 'LXGW WenKai Screen Web', 'LXGWWenKaiLite', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-family: 'LXGWWenKaiLite', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 
-/* 标题单独设置 */
+/* 可选：标题单独设置 */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'LXGW WenKai Screen Web', sans-serif !important;
+  font-family: 'LXGWWenKaiLite', sans-serif !important;
 }
-
-/* -----------------------------------------------------------
-   3. 排版细节调整
------------------------------------------------------------ */
 
 /* 调大 Mainroad 的文章正文字体 */
 .content,
@@ -33,14 +38,12 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.5 !important;
 }
 
-/* 标题字号调整 */
+/* 可选：标题也适当调整 */
 .content h1 { font-size: 1.75rem !important; }
 .content h2 { font-size: 1.5rem !important; }
 .content h3 { font-size: 1.25rem !important; }
 
-/* 代码块字体设置 */
-/* 注意：代码块建议优先使用等宽字体 (Monospace)，通常不需要强制应用霞鹜文楷，
-   除非你想让代码也变成手写风。这里仅保留了你原本的字号设置。 */
+/* 代码块字体（保持等宽） */
 .highlight pre,
 .highlight code {
   font-size: 0.95rem !important;
