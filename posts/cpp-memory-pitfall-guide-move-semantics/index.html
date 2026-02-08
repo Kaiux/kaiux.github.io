@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+<head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>C&#43;&#43; 内存避坑指南：如何用移动语义和智能指针解决“深拷贝”与“内存泄漏” - 念风零壹</title>
@@ -15,6 +15,7 @@
 	<link rel="stylesheet" href="/css/custom.css">
 
 	<link rel="shortcut icon" href="/favicon.ico">
+		
 		
 </head>
 <body class="body">
@@ -1156,7 +1157,8 @@
 </span></span><span style="display:flex;"><span>A Destroyed (析构)
 </span></span><span style="display:flex;"><span>B Destroyed (析构)
 </span></span><span style="display:flex;"><span>=== 离开作用域 (main 结束) ===
-</span></span></code></pre></div><p><img src="/posts/weak_ptr.jpg" alt="">### 3.6. 总结与最佳实践</p>
+</span></span></code></pre></div><p><img src="/posts/weak_ptr.jpg" alt=""></p>
+<h3 id="36-总结与最佳实践">3.6. 总结与最佳实践</h3>
 <h4 id="361-对比总结">3.6.1. 对比总结</h4>
 <ol>
 <li><strong>C++ RAII / 智能指针</strong>：</li>
