@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=8080&amp;path=livereload" data-no-instant defer></script>
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Posts - 念风零壹</title>
@@ -41,6 +41,19 @@
 	<header class="main__header">
 		<h1 class="main__title">Posts</h1>
 	</header><article class="list__item post">
+	
+	<header class="list__header">
+		<h2 class="list__title post__title">
+			<a href="/posts/cpp-memory-pitfall-guide-move-semantics/" rel="bookmark">
+			C&#43;&#43; 内存避坑指南：如何用移动语义和智能指针解决“深拷贝”与“内存泄漏”
+			</a>
+		</h2>
+		
+	</header>
+	<div class="content list__excerpt post__content clearfix">
+		本文深度剖析了 C++ 与 Java 在内存管理上的本质差异。从函数传参的“值语义”陷阱切入，详细阐述了 C++ 为何默认进行深拷贝及其性能代价。文章重点讲解了核心机制 RAII 如何替代 GC 实现确定的资源管理，通过图解“移动语义”与“右值引用”揭示了高性能零拷贝的奥秘，并系统介绍了 unique_ptr 等智能指针的最佳实践与循环引用避坑指南，帮助开发者重塑内存思维模型。
+	</div>
+</article><article class="list__item post">
 	
 	<header class="list__header">
 		<h2 class="list__title post__title">

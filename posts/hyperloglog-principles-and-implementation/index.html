@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=8080&amp;path=livereload" data-no-instant defer></script>
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>基数估计的黑魔法：HyperLogLog 原理与实现 - 念风零壹</title>
@@ -138,7 +138,7 @@
 <li><strong>内存效率</strong>：每个寄存器（Register）仅占用 8 bits（<code>uint8_t</code>），因为 64 位整数的连续零长度不可能超过 64。在 1024 个桶的配置下，整个数据结构仅占用 <strong>1 KB</strong> 内存。</li>
 <li><strong>Linear Counting 修正</strong>：概率算法在数据量极小时（桶还没被填满）误差较大。因此，当估算值较小时，我们切换到 <strong>Linear Counting</strong> 算法，利用空桶的比例来计算基数，从而保证全量程的准确性。</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="background-color:#f7f7f7;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#57606a">#include</span> <span style="color:#57606a">&lt;stdio.h&gt;</span><span style="color:#57606a">
+<div class="highlight"><pre tabindex="0" style="background-color:#f7f7f7;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#57606a">#include</span> <span style="color:#57606a">&lt;stdio.h&gt;</span><span style="color:#57606a">
 </span></span></span><span style="display:flex;"><span><span style="color:#57606a">#include</span> <span style="color:#57606a">&lt;stdint.h&gt;</span><span style="color:#57606a">
 </span></span></span><span style="display:flex;"><span><span style="color:#57606a">#include</span> <span style="color:#57606a">&lt;math.h&gt;</span><span style="color:#57606a">
 </span></span></span><span style="display:flex;"><span><span style="color:#57606a">#include</span> <span style="color:#57606a">&lt;string.h&gt;</span><span style="color:#57606a">
@@ -273,15 +273,6 @@
 	</div>
 <script async defer src="/js/menu.js"></script>
 
-<script>
-  window.MathJax = {
-    tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']],
-      displayMath: [['$$', '$$'], ['\\[', '\\]']],
-      processEscapes: true
-    }
-  };
-</script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
 </body>
 </html>
