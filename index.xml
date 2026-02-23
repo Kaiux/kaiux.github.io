@@ -6,8 +6,15 @@
     <description>Recent content on 念风零壹</description>
     <generator>Hugo</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 10 Feb 2026 07:53:08 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 10 Feb 2026 15:00:08 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>解剖 Python：关于指针、GIL 与异步内核</title>
+      <link>http://localhost:1313/posts/anatomy-of-python-pointers-the-gil-and-the-async-core/</link>
+      <pubDate>Tue, 10 Feb 2026 15:00:08 +0800</pubDate>
+      <guid>http://localhost:1313/posts/anatomy-of-python-pointers-the-gil-and-the-async-core/</guid>
+      <description>本文以 C++ 系统视角，解构 Python 的底层原理。深度剖析 &lt;code&gt;PyObject&lt;/code&gt; 内存布局、GIL 的原子性幻觉及 &lt;code&gt;asyncio&lt;/code&gt; 的 epoll 本质。通过 C++ 扩展打破边界，揭示“胶水语言”如何通过牺牲单核计算，换取极致的调度效率与生态垄断。</description>
+    </item>
     <item>
       <title>AI 时代的前端技术：从系统编程到 JavaScript/TypeScript</title>
       <link>http://localhost:1313/posts/front-end-technology-in-the-ai-era/</link>

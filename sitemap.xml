@@ -2,13 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/posts/front-end-technology-in-the-ai-era/</loc>
-    <lastmod>2026-02-10T07:53:08+08:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/posts/</loc>
-    <lastmod>2026-02-10T07:53:08+08:00</lastmod>
+    <lastmod>2026-02-10T15:00:08+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/</loc>
+    <lastmod>2026-02-10T15:00:08+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/anatomy-of-python-pointers-the-gil-and-the-async-core/</loc>
+    <lastmod>2026-02-10T15:00:08+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/front-end-technology-in-the-ai-era/</loc>
     <lastmod>2026-02-10T07:53:08+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/cpp-memory-pitfall-guide-move-semantics/</loc>
