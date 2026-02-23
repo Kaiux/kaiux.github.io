@@ -2,52 +2,52 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on 念风零壹</title>
-    <link>http://localhost:1313/posts/</link>
+    <link>https://www.kaiud.cn/posts/</link>
     <description>Recent content in Posts on 念风零壹</description>
     <generator>Hugo</generator>
     <language>zh-cn</language>
     <lastBuildDate>Tue, 10 Feb 2026 15:00:08 +0800</lastBuildDate>
-    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://www.kaiud.cn/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>解剖 Python：关于指针、GIL 与异步内核</title>
-      <link>http://localhost:1313/posts/anatomy-of-python-pointers-the-gil-and-the-async-core/</link>
+      <link>https://www.kaiud.cn/posts/anatomy-of-python-pointers-the-gil-and-the-async-core/</link>
       <pubDate>Tue, 10 Feb 2026 15:00:08 +0800</pubDate>
-      <guid>http://localhost:1313/posts/anatomy-of-python-pointers-the-gil-and-the-async-core/</guid>
+      <guid>https://www.kaiud.cn/posts/anatomy-of-python-pointers-the-gil-and-the-async-core/</guid>
       <description>本文以 C++ 系统视角，解构 Python 的底层原理。深度剖析 &lt;code&gt;PyObject&lt;/code&gt; 内存布局、GIL 的原子性幻觉及 &lt;code&gt;asyncio&lt;/code&gt; 的 epoll 本质。通过 C++ 扩展打破边界，揭示“胶水语言”如何通过牺牲单核计算，换取极致的调度效率与生态垄断。</description>
     </item>
     <item>
       <title>AI 时代的前端技术：从系统编程到 JavaScript/TypeScript</title>
-      <link>http://localhost:1313/posts/front-end-technology-in-the-ai-era/</link>
+      <link>https://www.kaiud.cn/posts/front-end-technology-in-the-ai-era/</link>
       <pubDate>Tue, 10 Feb 2026 07:53:08 +0800</pubDate>
-      <guid>http://localhost:1313/posts/front-end-technology-in-the-ai-era/</guid>
+      <guid>https://www.kaiud.cn/posts/front-end-technology-in-the-ai-era/</guid>
       <description>本文从系统程序员的视角，深入剖析了 JavaScript 和 TypeScript 在现代复杂软件架构中的核心地位。通过对 V8 引擎优化机制、构建工具链演进以及异步 I/O 模型的底层拆解，揭示了前端技术栈如何实现足以媲美原生应用的执行效率。本文不仅探讨了运行时机制的演变，更从语言设计层面分析了其在高并发系统与大规模工程协作中的技术优势，旨在帮助开发者构建起从硬件到底层运行时的完整技术视野。</description>
     </item>
     <item>
       <title>C&#43;&#43; 内存避坑指南：如何用移动语义和智能指针解决“深拷贝”与“内存泄漏”</title>
-      <link>http://localhost:1313/posts/cpp-memory-pitfall-guide-move-semantics/</link>
+      <link>https://www.kaiud.cn/posts/cpp-memory-pitfall-guide-move-semantics/</link>
       <pubDate>Sun, 08 Feb 2026 22:22:08 +0800</pubDate>
-      <guid>http://localhost:1313/posts/cpp-memory-pitfall-guide-move-semantics/</guid>
+      <guid>https://www.kaiud.cn/posts/cpp-memory-pitfall-guide-move-semantics/</guid>
       <description>本文深度剖析了 C++ 与 Java 在内存管理上的本质差异。从函数传参的“值语义”陷阱切入，详细阐述了 C++ 为何默认进行深拷贝及其性能代价。文章重点讲解了核心机制 RAII 如何替代 GC 实现确定的资源管理，通过图解“移动语义”与“右值引用”揭示了高性能零拷贝的奥秘，并系统介绍了 unique_ptr 等智能指针的最佳实践与循环引用避坑指南，帮助开发者重塑内存思维模型。</description>
     </item>
     <item>
       <title>硬核科普：为何小米任天堂封杀 Root？揭秘操作系统从启动到“夺权”的底层游戏</title>
-      <link>http://localhost:1313/posts/battle-for-ring-0-root-bootloader-hacking/</link>
+      <link>https://www.kaiud.cn/posts/battle-for-ring-0-root-bootloader-hacking/</link>
       <pubDate>Sat, 31 Jan 2026 15:00:08 +0800</pubDate>
-      <guid>http://localhost:1313/posts/battle-for-ring-0-root-bootloader-hacking/</guid>
+      <guid>https://www.kaiud.cn/posts/battle-for-ring-0-root-bootloader-hacking/</guid>
       <description>小米锁BL、任天堂反破解，厂商在怕什么？本文硬核拆解从开机到“夺权”的底层逻辑。穿越UEFI权力交接，揭秘Ring0物理防线与Root本质，深度剖析Switch硬破的“电压故障注入”原理。带你深入微观世界，看懂这场芯片深处的信任链攻防战。</description>
     </item>
     <item>
       <title>基数估计的黑魔法：HyperLogLog 原理与实现</title>
-      <link>http://localhost:1313/posts/hyperloglog-principles-and-implementation/</link>
+      <link>https://www.kaiud.cn/posts/hyperloglog-principles-and-implementation/</link>
       <pubDate>Sun, 25 Jan 2026 11:50:42 +0800</pubDate>
-      <guid>http://localhost:1313/posts/hyperloglog-principles-and-implementation/</guid>
+      <guid>https://www.kaiud.cn/posts/hyperloglog-principles-and-implementation/</guid>
       <description>本文深入浅出地解析了 HyperLogLog算法的核心原理。从“抛硬币”的直觉出发，揭示了如何利用哈希比特流中的极端观测值推断海量数据的基数。并提供了一套基于 C 语言的实现方案。展示了如何通过严谨的数学模型，在极低内存下实现十亿级数据的高精度估算。</description>
     </item>
     <item>
       <title>如何使用Scala的ClassTag</title>
-      <link>http://localhost:1313/posts/how-to-use-scala-classtag/</link>
+      <link>https://www.kaiud.cn/posts/how-to-use-scala-classtag/</link>
       <pubDate>Wed, 19 Jun 2019 09:09:07 +0800</pubDate>
-      <guid>http://localhost:1313/posts/how-to-use-scala-classtag/</guid>
+      <guid>https://www.kaiud.cn/posts/how-to-use-scala-classtag/</guid>
       <description>本文通过一个经典的 Map[String, Any] 类型转换场景，深入探讨 Scala 中 ClassTag 的必要性。文章通过三个迭代方案，演示了如何从脆弱的 asInstanceOf 逐步进化到利用 ClassTag 绕过 JVM 类型擦除，实现运行时的类型安全检查。</description>
     </item>
   </channel>
