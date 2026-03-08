@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=8080&amp;path=livereload" data-no-instant defer></script>
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>硬核科普：为何小米任天堂封杀 Root？揭秘操作系统从启动到“夺权”的底层游戏 - 念风零壹</title>
@@ -56,7 +56,7 @@
 <p>现在的电脑几乎都标配 <strong>UEFI</strong> 启动，与之搭配的是 <strong>GPT (GUID Partition Table)</strong> 分区表。</p>
 <p>它的优势显而易见：彻底打破了容量和分区数量的限制，想分多少就分多少。更重要的是它具备了<strong>容灾机制</strong>——MBR 坏了，整块硬盘的数据可能就读不出来了；但 GPT 聪明地在硬盘的“车头”和“车尾”各存了一份，坏了还能救。</p>
 <p>为了照顾那些老旧的软件，现在的 GPT 硬盘还会在开头保留一个“假装的 MBR”。它的唯一作用就是告诉老软件：“这块硬盘已经有主了，别乱动。”</p>
-<p><img src="/posts/mbrvsgpt.jpg" alt=""></p>
+<p><img src="/posts/bootloader-hacking/mbrvsgpt.jpg" alt=""></p>
 <h2 id="二第一棒火炬手">二、第一棒火炬手</h2>
 <p>当你按下电源键，电流涌入主板，CPU 做的第一件事是“硬编码”写死的：强制读取一段“绝对权威”的代码。</p>
 <p>这里住着硬件的灵魂——<strong>固件 (Firmware)</strong>。不过，根据设备类型的不同，这里的管家也分为两派。</p>
@@ -66,7 +66,7 @@
 <li><strong>老管家叫 BIOS</strong>。它是个守旧派，只懂 16 位汇编语言，只能呆板地读取硬盘头部的 MBR，干活慢且效率低。</li>
 <li><strong>新管家叫 UEFI</strong>。它本质上已经是一个<strong>微型操作系统</strong>了。它能读懂文件系统（比如 FAT32），能直接运行后缀为 <code>.efi</code> 的可执行程序，甚至能联网。这也是为什么现在的 BIOS 界面能用鼠标、能截图，甚至做得花里胡哨的原因。</li>
 </ul>
-<p><img src="/posts/bios.jpg" alt=""></p>
+<p><img src="/posts/bootloader-hacking/bios.jpg" alt=""></p>
 <p><strong>2. 嵌入式界的管家：BootROM</strong></p>
 <p>对于<strong>小米手机</strong>或 <strong>Switch</strong> 这种嵌入式设备（通常是 ARM 架构），虽然它们没有像电脑那样可以按 <code>Del</code> 键进入的图形化 UEFI 界面，但核心逻辑是一样的。</p>
 <p>它们依靠的是芯片出厂时就在内部烧录死的一小段代码——<strong>BootROM</strong>。它是硬件苏醒后执行的第一段代码，比任何软件都早，且无法被修改。它的职责单一而神圣：初始化最基本的硬件，然后去寻找并验证下一棒接力者。</p>
@@ -80,7 +80,7 @@
 <li>你可能安装了双系统，需要有人来问你到底进哪一个。</li>
 </ol>
 <p>所以，Bootloader 就像是一个专业的“领路人”。它负责把内核文件（<code>vmlinuz</code>）和初始化文件系统（<code>initrd</code>）搬运到内存里，一切准备就绪后，执行一个信仰之跃（Jump 指令），将 CPU 的控制权彻底移交给内核。</p>
-<p><img src="/posts/bootloader.jpg" alt=""></p>
+<p><img src="/posts/bootloader-hacking/bootloader.jpg" alt=""></p>
 <h2 id="四阶级森严">四、阶级森严</h2>
 <p>内核（Kernel）一旦接管了 CPU，做的第一件事就是利用 CPU 的硬件特性，建立起森严的等级制度。这是系统安全的基石。</p>
 <p><strong>1. 消失的 Ring 1 和 Ring 2</strong></p>
@@ -102,7 +102,7 @@
 <li><strong>换栈（Stack Switching）</strong>：这是关键一步，CPU 会自动把栈指针从“用户栈”切换到“内核栈”。这是为了防止黑客在栈里埋雷，确保内核在一个绝对干净的环境下工作。</li>
 <li>内核替你办完事，把结果拷回用户内存，然后退回 Ring 3。</li>
 </ol>
-<p><img src="/posts/rings.jpg" alt=""></p>
+<p><img src="/posts/bootloader-hacking/rings.jpg" alt=""></p>
 <h2 id="五真假美猴王">五、真假美猴王</h2>
 <p>这是很多技术爱好者最容易搞混的地方：<strong>“我手机 Root 了，是不是就意味着我的 App 运行在 Ring 0 了？”</strong></p>
 <p><strong>答案是：NO。即使你 Root 了，你的 App 依然运行在 Ring 3。</strong></p>
@@ -120,7 +120,7 @@
 <li><strong>内核（Ring 0）</strong> 驱动硬盘磁头，物理擦除数据。</li>
 </ol>
 <p><strong>总结一下</strong>：Root 用户就像是拿着“圣旨”的钦差大臣，但他本身还是个人（运行在 Ring 3）；而 Ring 0 才是那个真正持刀动手的刽子手。<strong>Root 拿到了最高行政权，但没有拿到最高物理执行权。</strong></p>
-<p><img src="/posts/rootvsring.jpg" alt=""></p>
+<p><img src="/posts/bootloader-hacking/rootvsring.jpg" alt=""></p>
 <h2 id="六打破枷锁">六、打破枷锁</h2>
 <p>理解了上面的“信任链”和“权限墙”，我们终于可以看懂黑客是如何一步步攻破系统的。这个过程，本质上就是一场精密的外科手术。</p>
 <p><strong>1. 撕开封条：手机解锁 BL (Bootloader)</strong></p>
@@ -137,7 +137,7 @@
 <li><strong>移植手术</strong>：因为你之前<strong>解锁了 BL</strong>，Bootloader 看到这个被篡改过的镜像，虽然签名不对，但它耸耸肩：“反正你解锁了，你开心就好”，然后把它刷进了硬盘。</li>
 <li><strong>夺舍</strong>：手机重启，内核加载。Magisk 的守护进程随之启动，接管了权限管理。</li>
 </ol>
-<p><img src="/posts/%E5%88%B7%E6%9C%BA.jpg" alt=""></p>
+<p><img src="/posts/bootloader-hacking/%E5%88%B7%E6%9C%BA.jpg" alt=""></p>
 <p><strong>3. 终极破解：Switch 与芯片硬破</strong></p>
 <p>如果说手机 Root 还是软件层面的博弈，那么 Switch 的破解就是物理层面的暴力美学。Switch 破解的核心动力非常朴素：<strong>因为穷，不想买游戏，所以必须绕过游戏签名验证。</strong></p>
 <p><strong>(1) 上古时代的“软破”</strong></p>
@@ -152,7 +152,7 @@
 <p>这就好比保安拦住你要查身份证，你没带。但在保安张嘴问你“身份证呢？”的一瞬间，你突然在他耳边敲了一记锣。保安脑子一片空白，下意识地摆摆手：“行行行，进去吧。”</p>
 <p><strong>(3) 鸠占鹊巢：Atmosphere (大气层)</strong></p>
 <p>既然通过“电击”保安混进了大门，我们就不加载任天堂官方系统了，而是加载 <strong>Atmosphere</strong>。它本质上是一个<strong>定制的 Bootloader + 系统补丁集</strong>。它接管了启动流程，并且在内存中实时修改任天堂的 OS，欺骗系统说：“这张盗版卡是通过验证的”。</p>
-<p><img src="/posts/switch.jpg" alt=""></p>
+<p><img src="/posts/bootloader-hacking/switch.jpg" alt=""></p>
 <h2 id="七猫鼠游戏">七、猫鼠游戏</h2>
 <p>Root 成功了，并不代表你可以高枕无忧。事实上，这才是你和 App 开发商（尤其是银行、游戏）之间“猫鼠游戏”的开始。</p>
 <p><strong>1. App 是怎么发现你 Root 的？</strong></p>
